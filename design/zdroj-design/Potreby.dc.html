@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<title>Co lidem chybí – skutečné potřeby</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&amp;family=Inter:wght@400;500;600;700&amp;family=Caveat:wght@600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F7F3E9}
+a{color:#244A35}a:hover{color:#1a3727}
+.paper{background-color:#F7F3E9;background-image:radial-gradient(rgba(36,74,53,.07) 1px,transparent 1px);background-size:14px 14px}
+</style>
+</helmet>
+<div class="paper" style="width:1440px;box-sizing:border-box;padding:56px 72px 72px;font-family:Inter,sans-serif;color:#252525;display:flex;flex-direction:column;gap:28px">
+
+<header style="display:flex;justify-content:space-between;align-items:flex-end;gap:40px">
+  <div style="display:flex;flex-direction:column;gap:10px;max-width:760px">
+    <span style="font-size:12px;font-weight:700;letter-spacing:1.5px;color:#8A4A2C">CO LIDEM CHYBÍ · UKÁZKOVÁ DATA</span>
+    <h1 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:54px;line-height:1.05;letter-spacing:-1.4px">Skutečné potřeby. Skuteční zájemci.</h1>
+    <p style="margin:0;font-size:16px;line-height:1.5;color:#4a4a4a">Tady se nevtipkuje – humor je vypnutý. Napiš, co ti chybí, ostatní se přidají. Z nejsilnějších potřeb vznikají podnikatelské příležitosti.</p>
+  </div>
+  <a href="#" style="min-height:48px;padding:0 20px;border-radius:6px;background:#244A35;color:#F7F3E9;font:700 15px Inter;display:flex;align-items:center;text-decoration:none">Přidat potřebu</a>
+</header>
+
+<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px">
+  <span style="padding:10px 14px;border:1.5px solid #252525;border-radius:6px;background:#FFFFFF;font-weight:600">Kategorie: Všechny ▾</span>
+  <span style="padding:10px 14px;border:1.5px solid #252525;border-radius:6px;background:#FFFFFF;font-weight:600">Lokalita: Celá ČR ▾</span>
+  <span style="padding:10px 14px;border-radius:6px;background:#244A35;color:#F7F3E9;font-weight:600">Nejvíc zájemců</span>
+  <span style="padding:10px 14px;border-radius:6px;font-weight:600">Ochotni platit</span>
+  <span style="padding:10px 14px;border-radius:6px;font-weight:600">Bez nabídky řešení</span>
+  <span style="padding:10px 14px;border-radius:6px;font-weight:600">Nejnovější</span>
+</div>
+
+<div style="display:flex;gap:24px;align-items:flex-start">
+  <div style="flex:1;display:flex;flex-direction:column;gap:14px">
+    <sc-for list="{{needs}}" as="n" hint-placeholder-count="4">
+      <article style="background:#FFFFFF;border:1px solid #e3dccb;border-radius:8px;padding:22px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:12px;font-weight:700"><span style="padding:4px 8px;background:{{n.catBg}};border-radius:4px">{{n.cat}}</span><span style="padding:4px 8px;border:1px solid #cfc6b0;border-radius:4px">{{n.place}}</span><span style="color:#5a5a5a;font-weight:500;padding:4px 0">{{n.time}}</span></div>
+        <div style="display:flex;gap:24px;align-items:flex-start">
+          <div style="flex:1;display:flex;flex-direction:column;gap:6px"><b style="font-family:'Bricolage Grotesque',sans-serif;font-size:24px;line-height:1.2">{{n.title}}</b><span style="font-size:15px;line-height:1.5;color:#3d3d3d">{{n.desc}}</span></div>
+          <div style="width:140px;text-align:right;display:flex;flex-direction:column"><b style="font-family:'Bricolage Grotesque',sans-serif;font-size:36px;color:#244A35;line-height:1">{{n.interest}}</b><span style="font-size:12px;color:#5a5a5a">má zájem o řešení</span></div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-top:1px solid #efe9db;padding-top:14px">
+          <button style="min-height:42px;padding:0 14px;border-radius:6px;border:0;background:#244A35;color:#F7F3E9;font:600 13px Inter">Taky to potřebuju</button>
+          <button style="min-height:42px;padding:0 14px;border-radius:6px;border:1.5px solid #252525;background:#FFFFFF;font:600 13px Inter">Zaplatil/a bych · {{n.pay}}</button>
+          <button style="min-height:42px;padding:0 14px;border-radius:6px;border:1.5px solid #cfc6b0;background:#FFFFFF;font:600 13px Inter">Souhlasím · {{n.agree}}</button>
+          <span style="flex:1"></span>
+          <button style="min-height:42px;padding:0 14px;border-radius:6px;border:0;background:#E5B54B;color:#252525;font:700 13px Inter">Nabízím řešení · {{n.offers}}</button>
+        </div>
+        <span style="font-size:12px;color:#4a4a4a">Ochota platit: <b>{{n.price}}</b> (medián z odpovědí)</span>
+      </article>
+    </sc-for>
+  </div>
+
+  <aside style="width:380px;display:flex;flex-direction:column;gap:16px">
+    <div style="background:#FFFFFF;border:1px solid #e3dccb;border-radius:8px;padding:20px;display:flex;flex-direction:column;gap:10px">
+      <b style="font-family:'Bricolage Grotesque',sans-serif;font-size:20px">Poptávka podle kraje</b>
+      <sc-for list="{{regions}}" as="r" hint-placeholder-count="5">
+        <div style="display:flex;align-items:center;gap:10px;font-size:13px"><span style="width:130px">{{r.name}}</span><div style="flex:1;height:8px;background:#efe9db;border-radius:2px"><div style="height:8px;width:{{r.w}};background:#C76D46;border-radius:2px"></div></div><b style="width:40px;text-align:right">{{r.n}}</b></div>
+      </sc-for>
+    </div>
+    <div style="background:#244A35;color:#F7F3E9;border-radius:8px;padding:22px;display:flex;flex-direction:column;gap:10px">
+      <span style="font-size:11px;font-weight:700;letter-spacing:1.5px;color:#E5B54B">PRO PODNIKATELE A OBCE</span>
+      <b style="font-family:'Bricolage Grotesque',sans-serif;font-size:22px;line-height:1.25">Hledáte, co lidé opravdu chtějí?</b>
+      <span style="font-size:14px;line-height:1.5;color:#d9e3dc">Sledujte kategorii nebo region a dostávejte souhrn nových potřeb. Anonymizovaná data, žádné kontakty bez souhlasu.</span>
+      <button style="align-self:flex-start;min-height:44px;padding:0 16px;border-radius:6px;border:0;background:#E5B54B;color:#252525;font:700 14px Inter">Sledovat příležitosti</button>
+    </div>
+    <div style="border:1.5px dashed #b9b09a;border-radius:8px;padding:18px;display:flex;flex-direction:column;gap:6px">
+      <span style="font-family:Caveat,cursive;font-size:24px;color:#244A35">Splněno!</span>
+      <span style="font-size:14px;line-height:1.45">„Sdílená dodávka na stěhování v Olomouci“ – 214 zájemců, řešení nabídl místní spolek. Odznak <b>Pomocná ruka</b> pro všechny, kdo se přidali.</span>
+    </div>
+  </aside>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const N = (cat, catBg, place, time, title, desc, interest, pay, agree, offers, price) => ({ cat, catBg, place, time, title, desc, interest, pay, agree, offers, price });
+    const R = [['Jihomoravský', 612], ['Moravskoslezský', 540], ['Praha', 498], ['Středočeský', 377], ['Ústecký', 260]];
+    return {
+      needs: [
+        N('Místní potřeby', '#F4DCD0', 'Brno-venkov', 'před 2 dny', 'Spolehlivý řemeslník do 14 dnů', 'Malé opravy (kapající baterie, vypínač) nikdo nechce brát. Čekám měsíce.', 612, 188, 941, 7, '400–600 Kč za výjezd'),
+        N('Rodina', '#F4DCD0', 'Ostrava', 'před 5 dny', 'Hlídání dětí v neděli odpoledne', 'Školky a kroužky o víkendu nejedou. Stačily by dvě hodiny, ať si můžeme zajít k lékaři nebo nakoupit.', 403, 121, 610, 3, '180 Kč / hod'),
+        N('Bydlení', '#EEE6D2', 'Celá ČR', 'před týdnem', 'Srovnání nájmů podle ulic', 'Chci vědět, jestli je můj nájem férový. Inzeráty lžou a skutečné ceny nikdo nezveřejňuje.', 355, 64, 512, 0, '49 Kč / měsíc'),
+        N('Technologie', '#E6E6E1', 'Plzeňský kraj', 'před 3 dny', 'Pomoc seniorům s mobilem', 'Táta neumí poslat fotku ani zaplatit kartou v telefonu. Hodina vysvětlování doma by stačila.', 288, 97, 433, 12, '250 Kč / návštěva')
+      ],
+      regions: R.map(([name, n]) => ({ name, n, w: (n / 612 * 100) + '%' }))
+    };
+  }
+}
+</script>
+</body>
+</html>

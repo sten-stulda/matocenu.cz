@@ -1,0 +1,116 @@
+name: matocenu
+
+x-app: &app
+  build:
+    context: .
+    dockerfile: docker/php/Dockerfile
+    target: app
+  image: matocenu-app:latest
+  env_file: .env
+  environment: &app-env
+    LOG_CHANNEL: stderr
+    DB_HOST: pgsql
+    DB_PORT: 5432
+    REDIS_HOST: redis
+    REDIS_PORT: 6379
+  depends_on:
+    pgsql:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+  volumes:
+    - storage:/var/www/html/storage
+  restart: unless-stopped
+
+services:
+  app:
+    <<: *app
+    # Unique alias: other stacks on shared networks also have a service called "app".
+    networks:
+      default:
+        aliases: [mtc-app]
+    healthcheck:
+      test: ["CMD-SHELL", "SCRIPT_NAME=/fpm-ping SCRIPT_FILENAME=/fpm-ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000 | grep -q pong"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 60s
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      target: web
+    image: matocenu-web:latest
+    depends_on:
+      - app
+    ports:
+      - "${MTC_HTTP_BIND:-127.0.0.1}:${MTC_HTTP_PORT:-8100}:80"
+    volumes:
+      # Public uploads (avatars) are served directly by nginx via public/storage symlink.
+      - storage:/var/www/html/storage:ro
+    restart: unless-stopped
+
+  horizon:
+    <<: *app
+    depends_on:
+      app:
+        condition: service_started
+    command: ["php", "artisan", "horizon"]
+    environment:
+      <<: *app-env
+      RUN_MIGRATIONS: "0"
+
+  scheduler:
+    <<: *app
+    depends_on:
+      app:
+        condition: service_started
+    command: ["php", "artisan", "schedule:work"]
+    environment:
+      <<: *app-env
+      RUN_MIGRATIONS: "0"
+
+  pgsql:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-matocenu}
+      POSTGRES_USER: ${DB_USERNAME:-matocenu}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set in .env}
+    volumes:
+      - pgsql:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
+    ports:
+      - "127.0.0.1:${MTC_DB_PORT:-54333}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-matocenu} -d ${DB_DATABASE:-matocenu}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis:/data
+    ports:
+      - "127.0.0.1:${MTC_REDIS_PORT:-63792}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  # Local e-mail catcher (web UI on 127.0.0.1:8025). Production sets real SMTP in .env.
+  mailpit:
+    image: axllent/mailpit:v1.21
+    ports:
+      - "127.0.0.1:${MTC_MAILPIT_PORT:-8025}:8025"
+    restart: unless-stopped
+
+volumes:
+  pgsql:
+  redis:
+  storage:

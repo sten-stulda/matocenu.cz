@@ -1,0 +1,25 @@
+MáToCenu.cz – designový koncept (varianta „Původní koncept“)
+=============================================================
+
+obrazky/       PNG náhledy všech obrazovek (mobil ve 2× rozlišení)
+html/          Statické HTML stránky – otevřete v prohlížeči, fungují offline
+               (písma Inter, Bricolage Grotesque a Caveat jsou přibalená ve složce fonts/)
+zdroj-design/  Zdrojové soubory artboardů z designového plátna (.dc.html)
+
+Obrazovky:
+ 01  Identita, logo a design systém (barvy, typografie, osobnosti, reakce, kategorie, stavy, tituly)
+ 02  Homepage – desktop
+ 03  Homepage – mobil, světlý režim
+ 04  Homepage – mobil, tmavý režim
+ 05  Detail otázky a proces generování odpovědi (6 kroků)
+ 06  Kategorie, žebříčky a uživatelský profil
+ 07  Co lidem chybí – skutečné potřeby
+ 08  Administrace
+
+Pozn.: HTML exporty jsou statické (přepínání stylů otázky a počítadlo znaků
+fungují jen na interaktivním plátně). Všechny texty, jména a čísla jsou
+ukázková data, nejde o skutečné odpovědi uživatelů.
+
+Barvy: #244A35 lesní zelená · #E5B54B hořčice · #C76D46 terakota (text #8A4A2C)
+       #F7F3E9 krémová · #252525 uhel · #FFFFFF bílá
+Tmavý režim: pozadí #171A17 · karty #222722 · text #EDE7D8 · primár #7FB394

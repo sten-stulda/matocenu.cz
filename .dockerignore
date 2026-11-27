@@ -1,0 +1,22 @@
+# Never bake secrets or local state into images; .env is injected at runtime via env_file.
+.env
+.env.*
+!.env.example
+.git
+.github
+node_modules
+vendor
+public/build
+public/hot
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/pail
+tests/.phpunit.cache
+.phpunit.result.cache
+design
+*.log
+bootstrap/cache/*.php
+storage/app/private/*
+docker-compose.override.yml

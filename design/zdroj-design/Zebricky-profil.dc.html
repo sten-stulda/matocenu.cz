@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<title>Kategorie, žebříčky a profil</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&amp;family=Inter:wght@400;500;600;700&amp;family=Caveat:wght@600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F7F3E9}
+a{color:#244A35}a:hover{color:#1a3727}
+.paper{background-color:#F7F3E9;background-image:radial-gradient(rgba(36,74,53,.07) 1px,transparent 1px);background-size:14px 14px}
+</style>
+</helmet>
+<div class="paper" style="width:1440px;box-sizing:border-box;padding:56px 72px 72px;font-family:Inter,sans-serif;color:#252525;display:flex;flex-direction:column;gap:40px">
+
+<section style="display:flex;flex-direction:column;gap:16px">
+  <div style="display:flex;justify-content:space-between;align-items:baseline"><h2 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:34px">Kategorie</h2><span style="font-size:12px;font-weight:700;padding:4px 8px;border:1.5px dashed #8A4A2C;color:#8A4A2C;border-radius:4px">UKÁZKOVÁ DATA</span></div>
+  <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px">
+    <sc-for list="{{cats}}" as="c" hint-placeholder-count="15">
+      <a href="#" style="background:{{c.bg}};border-radius:8px;padding:16px;min-height:92px;display:flex;flex-direction:column;justify-content:space-between;text-decoration:none;color:#252525">
+        <span style="display:flex;justify-content:space-between;align-items:center"><b style="font-family:'Bricolage Grotesque',sans-serif;font-size:18px">{{c.name}}</b><span style="width:12px;height:12px;border-radius:3px;background:{{c.dot}}"></span></span>
+        <span style="font-size:12px;color:#4a4a4a">{{c.n}} otázek · {{c.hot}}</span>
+      </a>
+    </sc-for>
+  </div>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:16px">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:20px">
+    <h2 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:34px">Žebříčky</h2>
+    <div role="tablist" style="display:flex;gap:4px;font-size:14px;font-weight:600"><span style="padding:10px 14px;background:#244A35;color:#F7F3E9;border-radius:4px">Týden</span><span style="padding:10px 14px">Den</span><span style="padding:10px 14px">Měsíc</span><span style="padding:10px 14px">Můj kraj</span></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px">
+    <div style="grid-column:span 2;background:#FFFFFF;border:1px solid #e3dccb;border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:6px">
+      <b style="font-family:'Bricolage Grotesque',sans-serif;font-size:20px;margin-bottom:8px">Nejoblíbenější autor týdne</b>
+      <sc-for list="{{leaders}}" as="l" hint-placeholder-count="6">
+        <div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #efe9db;font-size:14px">
+          <span style="width:30px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;color:#8A4A2C">{{l.rank}}</span>
+          <span style="width:38px;height:38px;border-radius:50%;background:{{l.bg}};color:{{l.fg}};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px">{{l.ini}}</span>
+          <span style="flex:1"><b>{{l.name}}</b> <span style="font-size:12px;color:#5a5a5a">· {{l.title}}</span></span>
+          <span style="width:180px;font-size:12px;color:#5a5a5a">{{l.best}}</span>
+          <span style="width:70px;text-align:right;font-weight:700">{{l.pts}}</span>
+          <span style="width:40px;text-align:right;font-size:12px;font-weight:700;color:{{l.trendC}}">{{l.trend}}</span>
+        </div>
+      </sc-for>
+      <span style="margin-top:10px;font-size:12px;color:#5a5a5a">Body jen za reakce jiných lidí. Do žebříčku se počítají max. 3 odpovědi denně – kvalita, ne kvantita.</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="background:#E5B54B;border-radius:8px;padding:18px;display:flex;flex-direction:column;gap:6px"><span style="font-size:11px;font-weight:700;letter-spacing:1px">NEJLEPŠÍ ODPOVĚĎ TÝDNE</span><b style="font-family:'Bricolage Grotesque',sans-serif;font-size:18px;line-height:1.3">„Chybí mi pondělí, které by začínalo v úterý.“</b><span style="font-size:12px">TondaHrnek · Sarkastik · 1 940 reakcí</span></div>
+      <div style="background:#FFFFFF;border:1px solid #e3dccb;border-radius:8px;padding:18px;display:flex;flex-direction:column;gap:6px"><span style="font-size:11px;font-weight:700;letter-spacing:1px;color:#8A4A2C">NEJZAJÍMAVĚJŠÍ OTÁZKA</span><b style="font-size:15px">Za co byste nikdy nezaplatili, i kdybyste měli miliony?</b><span style="font-size:12px;color:#5a5a5a">988 odpovědí · 41 % „Mám to stejně!“</span></div>
+      <div style="background:#244A35;color:#F7F3E9;border-radius:8px;padding:18px;display:flex;flex-direction:column;gap:8px"><span style="font-size:11px;font-weight:700;letter-spacing:1px;color:#E5B54B">NEJAKTIVNĚJŠÍ REGION</span>
+        <div style="display:flex;justify-content:space-between;font-size:14px"><b>1. Jihomoravský</b><span>8 412</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:14px"><span>2. Moravskoslezský</span><span>7 990</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:14px"><span>3. Praha</span><span>7 105</span></div>
+      </div>
+      <div style="background:#FFFFFF;border:1px solid #e3dccb;border-radius:8px;padding:18px;display:flex;flex-direction:column;gap:6px"><span style="font-size:11px;font-weight:700;letter-spacing:1px;color:#8A4A2C">NEJČASTĚJŠÍ POTŘEBA</span><b style="font-size:15px">Spolehlivý řemeslník do 14 dnů</b><span style="font-size:12px;color:#5a5a5a">612 lidí · 188 by zaplatilo</span></div>
+    </div>
+  </div>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:16px">
+  <h2 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:34px">Uživatelský profil</h2>
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px">
+    <div style="background:#FFFFFF;border:1px solid #e3dccb;border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;gap:16px;align-items:center">
+        <span style="width:84px;height:84px;border-radius:50%;background:#244A35;color:#E5B54B;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:30px;border:4px solid #E5B54B">PK</span>
+        <div style="display:flex;flex-direction:column;gap:4px"><b style="font-family:'Bricolage Grotesque',sans-serif;font-size:24px">Pepa z Kroměříže</b><span style="align-self:flex-start;font-size:12px;font-weight:700;padding:4px 8px;background:#E5B54B;border-radius:4px">Zlatá huba</span><span style="font-size:13px;color:#5a5a5a">Oblíbený styl: Moravák · člen od 2026</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;text-align:center">
+        <div style="background:#F7F3E9;border-radius:6px;padding:10px"><b style="font-size:22px">42</b><br><span style="font-size:12px">otázek</span></div>
+        <div style="background:#F7F3E9;border-radius:6px;padding:10px"><b style="font-size:22px">318</b><br><span style="font-size:12px">odpovědí</span></div>
+        <div style="background:#F7F3E9;border-radius:6px;padding:10px"><b style="font-size:22px">9 140</b><br><span style="font-size:12px">reakcí</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;font-size:13px"><span style="display:flex;justify-content:space-between"><b>Do titulu Mistr hlášek</b><span>760 / 1 000</span></span><div style="height:8px;background:#efe9db;border-radius:2px"><div style="width:76%;height:8px;background:#244A35;border-radius:2px"></div></div></div>
+      <span style="font-family:Caveat,cursive;font-size:22px;color:#8A4A2C">Série: 12 dní s odpovědí na otázku dne</span>
+    </div>
+    <div style="background:#FFFFFF;border:1px solid #e3dccb;border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:12px">
+      <div role="tablist" style="display:flex;gap:4px;font-size:13px;font-weight:600;border-bottom:1px solid #efe9db"><span style="padding:8px 10px;border-bottom:2.5px solid #244A35">Odpovědi</span><span style="padding:8px 10px;color:#5a5a5a">Otázky</span><span style="padding:8px 10px;color:#5a5a5a">Oblíbené</span><span style="padding:8px 10px;color:#5a5a5a">Ocenění</span></div>
+      <div style="display:flex;flex-direction:column;gap:4px;font-size:14px"><span style="font-size:12px;color:#5a5a5a">Co vám v životě nejvíce chybí?</span><b style="font-family:'Bricolage Grotesque',sans-serif;font-weight:500;font-size:17px">„Tož čas. Ráno sa nestíhám nasnídat…“</b><span style="font-size:12px;color:#244A35;font-weight:600">312× To má cenu!</span></div>
+      <div style="display:flex;flex-direction:column;gap:4px;font-size:14px;border-top:1px solid #efe9db;padding-top:10px"><span style="font-size:12px;color:#5a5a5a">Jaká hláška rodičů vám utkvěla?</span><b style="font-family:'Bricolage Grotesque',sans-serif;font-weight:500;font-size:17px">„Dokud nosíš nohy pod mým stolem…“</b><span style="font-size:12px;color:#244A35;font-weight:600">97× Mám to stejně!</span></div>
+      <b style="font-size:13px;margin-top:6px">Ocenění</b>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;font-size:12px;font-weight:600"><span style="padding:5px 8px;border:1.5px solid #252525;border-radius:4px">První hláška</span><span style="padding:5px 8px;border-radius:4px;background:#E5B54B">Odpověď dne ×3</span><span style="padding:5px 8px;border-radius:4px;background:#244A35;color:#F7F3E9">Pomocná ruka</span><span style="padding:5px 8px;border:1.5px dashed #b9b09a;border-radius:4px;color:#5a5a5a">Král grešlí – zamčeno</span></div>
+    </div>
+    <div style="background:#FFFFFF;border:1px solid #e3dccb;border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:12px;font-size:14px">
+      <b style="font-family:'Bricolage Grotesque',sans-serif;font-size:20px">Soukromí a upozornění</b>
+      <sc-for list="{{toggles}}" as="g" hint-placeholder-count="6">
+        <label style="display:flex;align-items:center;gap:12px;min-height:40px">
+          <span style="flex:1;display:flex;flex-direction:column"><b style="font-weight:600">{{g.label}}</b><span style="font-size:12px;color:#5a5a5a">{{g.hint}}</span></span>
+          <span style="width:44px;height:26px;border-radius:13px;background:{{g.bg}};position:relative;flex:none"><span style="position:absolute;top:3px;left:{{g.knob}};width:20px;height:20px;border-radius:50%;background:#FFFFFF"></span></span>
+        </label>
+      </sc-for>
+    </div>
+  </div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1650}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const cats = [
+      ['Každodenní život','#EEE6D2','#244A35',412,'roste'],['Peníze','#F5E3B5','#B8892A',388,'horké'],['Práce','#E3E9E2','#244A35',301,'klidné'],['Rodina','#F4DCD0','#C76D46',276,'roste'],['Vztahy','#F4DCD0','#8A4A2C',254,'horké'],
+      ['Bydlení','#EEE6D2','#8A4A2C',198,'klidné'],['Humor','#F5E3B5','#252525',520,'horké'],['Hudba a kultura','#E3E9E2','#C76D46',143,'roste'],['Technologie','#E6E6E1','#252525',167,'klidné'],['Společnost','#E3E9E2','#244A35',231,'horké'],
+      ['Vzpomínky','#EEE6D2','#B8892A',189,'roste'],['Místní potřeby','#F4DCD0','#244A35',305,'horké'],['Podnikání','#F5E3B5','#244A35',122,'roste'],['Přání a sny','#E3E9E2','#E5B54B',264,'otázka dne'],['Co kdyby…','#E6E6E1','#C76D46',310,'horké']
+    ].map(([name, bg, dot, n, hot]) => ({ name, bg, dot, n, hot }));
+    const L = (rank, ini, name, title, best, pts, trend, bg, fg) => ({ rank, ini, name, title, best, pts, trend, bg, fg, trendC: trend.startsWith('▲') ? '#244A35' : '#8A4A2C' });
+    const T = (label, hint, on) => ({ label, hint, bg: on ? '#244A35' : '#cfc6b0', knob: on ? '21px' : '3px' });
+    return {
+      cats,
+      leaders: [
+        L(1, 'KK', 'Kvido_z_Kolína', 'Legendární vypravěč', 'nejvíc „To mě pobavilo!“', '4 812', '▲2', '#252525', '#E5B54B'),
+        L(2, 'BO', 'Bára_Ostrava', 'Mistr hlášek', 'nejkratší úspěšná odpověď', '3 990', '▼1', '#244A35', '#E5B54B'),
+        L(3, 'PK', 'Pepa z Kroměříže', 'Zlatá huba', 'série 12 dní', '3 105', '▲4', '#E5B54B', '#252525'),
+        L(4, 'MJ', 'mirka.j', 'Selský filozof', 'nejzajímavější otázka', '2 744', '▼1', '#C76D46', '#FFFFFF'),
+        L(5, 'TH', 'TondaHrnek', 'Mudrlant', 'odpověď týdne', '2 210', '▲9', '#F1E4C4', '#244A35'),
+        L(6, 'EV', 'Eva_V', 'Mudrlant', 'nejvíc „Zlatá slova!“', '1 980', '▲1', '#E3E9E2', '#244A35')
+      ],
+      toggles: [
+        T('Vystupovat anonymně', 'Přezdívka se nezobrazí u odpovědí', false),
+        T('Povolit zobrazení originálu', 'Výchozí volba u stylizací', true),
+        T('Humor u citlivých témat', 'Vypnuto = vždy jen originál', false),
+        T('Upozornit na otázku dne', 'Každé ráno v 8:00', true),
+        T('Reakce na mé odpovědi', 'Souhrn jednou denně', true),
+        T('Zobrazit můj kraj', 'Pro žebříček regionů', true)
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
