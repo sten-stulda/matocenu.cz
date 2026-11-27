@@ -1,0 +1,10 @@
+title = "matocenu.cz"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Fake credentials in automated tests"
+paths = [
+    '''(^|/)tests/.*\.php$''',
+]
