@@ -32,12 +32,13 @@ class ReactionType extends Model
     /** @return Collection<int, ReactionType> active types, cached */
     public static function active(): Collection
     {
-        return Cache::remember('mtc:reaction-types', 600, fn () => static::where('is_active', true)->orderBy('sort_order')->get());
+        // Cache raw attributes, not objects (Laravel 13 cache.serializable_classes = false).
+        return static::hydrate(Cache::remember('mtc:reaction-types:attrs', 600, fn () => static::where('is_active', true)->orderBy('sort_order')->get()->map(fn (self $m) => $m->getAttributes())->all()));
     }
 
     public static function flush(): void
     {
-        Cache::forget('mtc:reaction-types');
+        Cache::forget('mtc:reaction-types:attrs');
     }
 
     protected static function booted(): void
