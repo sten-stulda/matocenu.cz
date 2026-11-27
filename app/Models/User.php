@@ -82,6 +82,18 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(User::class, 'user_blocks', 'blocker_id', 'blocked_id');
     }
 
+    /** @return BelongsToMany<Achievement, $this> */
+    public function achievements(): BelongsToMany
+    {
+        return $this->belongsToMany(Achievement::class, 'user_achievements')->withPivot('awarded_at');
+    }
+
+    /** Highest-tier title the user earned (shown next to the nickname if they allow it). */
+    public function title(): ?Achievement
+    {
+        return $this->achievements()->where('is_title', true)->where('is_active', true)->orderByDesc('tier')->first();
+    }
+
     /** @return HasMany<ConsentRecord, $this> */
     public function consents(): HasMany
     {

@@ -90,6 +90,8 @@
             @foreach (['community' => 'Pravidla komunity', 'ai' => 'Jak pracuje AI', 'privacy' => 'Soukromí', 'terms' => 'Podmínky', 'cookies' => 'Cookies'] as $type => $label)
                 <a class="text-cream/85 no-underline hover:text-mustard" href="{{ route('legal.show', \App\Models\LegalDocument::TYPES[$type][1]) }}">{{ $label }}</a>
             @endforeach
+            @if (Route::has('quotes.index') && feature('quotes'))<a class="text-cream/85 no-underline hover:text-mustard" href="{{ route('quotes.index') }}">Hlášky</a>@endif
+            @if (Route::has('rankings.method'))<a class="text-cream/85 no-underline hover:text-mustard" href="{{ route('rankings.method') }}">Jak počítáme žebříčky</a>@endif
             @if (Route::has('api.docs'))<a class="text-cream/85 no-underline hover:text-mustard" href="{{ route('api.docs') }}">API</a>@endif
         </nav>
     </div>

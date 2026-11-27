@@ -1,4 +1,4 @@
-@php($maxLen = (int) setting('answers.max_length'))
+@php $maxLen = (int) setting('answers.max_length'); @endphp
 <x-layouts::app current="home">
     <h1 class="sr-only">MáToCenu.cz – {{ setting('brand.slogan') }}</h1>
 
@@ -22,15 +22,17 @@
         </section>
 
         <aside class="space-y-6">
-            @if (! empty($quoteOfDay))
+            @php $quoteAnswer = ! empty($quote) ? $quote->answer : ($quoteOfDay ?? null); @endphp
+            @if ($quoteAnswer)
+                @php $quoteOfDay = $quoteAnswer; @endphp
                 <a href="{{ $quoteOfDay->url() }}" class="block rounded-[10px] bg-mustard p-6 text-charcoal no-underline">
-                    <p class="text-[12px] font-bold uppercase tracking-[.12em]">Hláška dne</p>
+                    <p class="text-[12px] font-bold uppercase tracking-[.12em]">{{ ! empty($quote) ? 'Hláška dne' : 'Nejvtipnější odpověď dne' }}</p>
                     <p class="mt-2 font-display text-2xl leading-tight font-bold">„{{ $quoteOfDay->display_text }}“</p>
                     <p class="mt-3 text-[13px] font-semibold">{{ $quoteOfDay->publicAuthor()?->name ?? 'Anonym' }} · {{ cz_plural($quoteOfDay->reactions_count, 'reakce', 'reakce', 'reakcí') }}</p>
                 </a>
             @endif
             @includeIf('pages.home.leaderboard-widget')
-            <div class="rounded-[10px] bg-mustard p-6 text-charcoal {{ ! empty($quoteOfDay) ? 'hidden lg:block lg:bg-mustard-100 dark:lg:bg-surface dark:lg:text-ink' : '' }}">
+            <div class="rounded-[10px] bg-mustard p-6 text-charcoal {{ ! empty($quoteAnswer) ? 'hidden lg:block lg:bg-mustard-100 dark:lg:bg-surface dark:lg:text-ink' : '' }}">
                 <p class="text-[12px] font-bold uppercase tracking-[.12em]">Jak to funguje</p>
                 <ol class="mt-3 space-y-2 text-[15px] font-semibold">
                     <li>1. Každý den jedna otázka.</li>

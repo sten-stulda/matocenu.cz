@@ -6,6 +6,7 @@ use App\Domain\Moderation\Enums\ModerationStatus;
 use App\Models\Answer;
 use App\Models\DailyQuestion;
 use App\Models\Question;
+use App\Models\Quote;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -31,6 +32,7 @@ class HomepageData
             'unanswered' => Question::query()->live()->where('answers_count', 0)->latest('published_at')->limit(3)->get(),
             'bestWeek' => $this->bestAnswers(now()->subDays(7), 3),
             'quoteOfDay' => $this->bestAnswers(now()->subDay(), 1)->first(),
+            'quote' => Quote::with(['answer.user', 'answer.style'])->where('period', 'day')->whereHas('answer', fn ($q) => $q->publiclyVisible())->latest('awarded_at')->first(),
             'archive' => DailyQuestion::with('question')->where('status', 'published')->orderByDesc('date')->skip(1)->limit(5)->get(),
         ]);
 

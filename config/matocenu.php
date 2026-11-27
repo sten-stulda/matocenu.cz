@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Administration\ReferenceData\AchievementsSyncer;
 use App\Domain\Administration\ReferenceData\AiSyncer;
 use App\Domain\Administration\ReferenceData\CategoriesSyncer;
 use App\Domain\Administration\ReferenceData\FeatureFlagsSyncer;
@@ -34,6 +35,7 @@ return [
         ReactionTypesSyncer::class,
         LanguageStylesSyncer::class,
         AiSyncer::class,
+        AchievementsSyncer::class,
     ],
 
     // GDPR: modules storing personal data (App\Domain\Identity\Contracts\PersonalDataContributor).
@@ -66,6 +68,8 @@ return [
         'prune' => 'Úklid dat podle retenčních lhůt',
         'daily_publish' => 'Publikace otázky dne',
         'daily_evaluate' => 'Denní vyhodnocení otázky dne',
+        'rankings' => 'Přepočet žebříčků (každou hodinu)',
+        'quotes' => 'Vyhodnocení hlášky dne / týdne / měsíce',
     ],
 
     'settings' => [
