@@ -9,7 +9,7 @@ use App\Models\User;
 /** Used while the AI module is not available – no variant is ever accepted. */
 class NullVariantResolver implements VariantResolver
 {
-    public function resolve(User $user, Question $question, string $original, int $variantId): ?string
+    public function resolve(User $user, Question $question, string $original, int $variantId): ?array
     {
         return null;
     }

@@ -103,6 +103,12 @@ class Question extends Model
         return $this->hasMany(QuestionOption::class)->orderBy('sort_order');
     }
 
+    /** @return HasMany<QuestionVariant, $this> */
+    public function variants(): HasMany
+    {
+        return $this->hasMany(QuestionVariant::class);
+    }
+
     /** @return HasMany<Answer, $this> */
     public function answers(): HasMany
     {

@@ -66,7 +66,7 @@ class SubmitAnswer
                 $numeric = number_format((float) str_replace([',', ' '], ['.', ''], $data->numericValue), 2, '.', '');
             }
 
-            [$display, $stylized] = $this->resolveDisplay($user, $question, $original, $data);
+            [$display, $stylized, $styleId] = $this->resolveDisplay($user, $question, $original, $data);
             [$status, $check] = $this->moderation->initialStatus($original.' '.$display);
 
             $answer = new Answer([
@@ -78,6 +78,7 @@ class SubmitAnswer
                 'option_id' => $optionId,
                 'numeric_value' => $numeric,
             ]);
+            $answer->language_style_id = $styleId;
             $answer->question_id = $question->id;
             $answer->user_id = $user->id;
             $answer->moderation_status = $status;
@@ -98,18 +99,18 @@ class SubmitAnswer
         });
     }
 
-    /** @return array{0: string, 1: bool} display text and whether it is a stylisation */
+    /** @return array{0: string, 1: bool, 2: int|null} display text, whether it is a stylisation, style id */
     public function resolveDisplay(User $user, Question $question, string $original, AnswerData $data): array
     {
         if ($data->variantId === null) {
-            return [$original, false];
+            return [$original, false, null];
         }
         // Etapa C binds an implementation that checks the variant belongs to this user's generation.
-        $text = app(VariantResolver::class)->resolve($user, $question, $original, $data->variantId);
-        if ($text === null) {
+        $v = app(VariantResolver::class)->resolve($user, $question, $original, $data->variantId);
+        if ($v === null) {
             throw new AnswerException('Zvolená varianta už není k dispozici. Vyber jinou nebo zveřejni originál.');
         }
 
-        return [$text, true];
+        return [$v['text'], true, $v['style_id']];
     }
 }

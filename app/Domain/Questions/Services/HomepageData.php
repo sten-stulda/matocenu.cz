@@ -50,7 +50,7 @@ class HomepageData
     /** @return Collection<int, Answer> */
     public function answersFor(Question $q, string $sort, int $limit): Collection
     {
-        return Answer::query()->with(['user', 'question'])
+        return Answer::query()->with(['user', 'question', 'style'])
             ->where('question_id', $q->id)->publiclyVisible()
             ->when($sort === 'top', fn ($w) => $w->where('score', '>', 0)->orderByDesc('score'))
             ->orderByDesc('published_at')->limit($limit)->get();
@@ -59,7 +59,7 @@ class HomepageData
     /** @return Collection<int, Answer> */
     public function bestAnswers(\DateTimeInterface $since, int $limit): Collection
     {
-        return Answer::query()->with(['user', 'question'])->publiclyVisible()
+        return Answer::query()->with(['user', 'question', 'style'])->publiclyVisible()
             ->where('published_at', '>=', $since)->where('score', '>', 0)
             ->whereHas('question', fn ($q) => $q->visible())
             ->orderByDesc('score')->orderByDesc('unique_reactors_count')->limit($limit)->get();

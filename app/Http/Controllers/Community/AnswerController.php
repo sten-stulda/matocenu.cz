@@ -12,7 +12,7 @@ class AnswerController extends Controller
 {
     public function show(Answer $answer): View
     {
-        $answer->load(['question.category', 'user']);
+        $answer->load(['question.category', 'user', 'style']);
         $this->authorize('view', $answer);
 
         return view('pages.answers.show', ['answer' => $answer]);

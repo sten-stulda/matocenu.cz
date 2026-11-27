@@ -7,8 +7,8 @@
         <span class="text-forest-100" x-data="countdown(@js($nextDailyAt->toIso8601String()))">· další otázka za <b class="text-mustard tabular-nums" x-text="left"></b></span>
     </div>
     <h2 id="otazka-dne" class="max-w-4xl font-display text-[34px] leading-[1.05] font-extrabold tracking-tight sm:text-[56px]">
-        <a href="{{ $q->url() }}" class="text-cream no-underline hover:underline">{{ $q->text }}</a>
+        <a href="{{ $q->url() }}" class="text-cream no-underline hover:underline" data-question-text>{{ $q->text }}</a>
     </h2>
-    @includeIf('pages.questions.partials.style-switcher', ['question' => $q, 'onDark' => true])
+    @include('pages.questions.partials.style-switcher', ['question' => $q, 'onDark' => true, 'daily' => $daily])
     <livewire:answer-composer :question-id="$q->id" :dark="true" />
 </div>

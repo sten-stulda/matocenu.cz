@@ -15,11 +15,7 @@
             @endif
             <span class="text-[12px] text-muted">{{ local_time($answer->published_at)?->diffForHumans() }}@if ($answer->edited_at) · upraveno @endif</span>
         </span>
-        @isset($answer->style_label)
-            <span class="badge-mustard">{{ $answer->style_label }}</span>
-        @elseif (! $answer->is_stylized)
-            <span class="badge-mustard">Originál</span>
-        @endisset
+        <span class="badge-mustard">{{ $answer->is_stylized ? ($answer->style?->name ?? 'Stylizace') : 'Originál' }}</span>
     </header>
 
     @if ($showQuestion && $answer->question)

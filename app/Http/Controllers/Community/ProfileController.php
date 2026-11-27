@@ -32,7 +32,7 @@ class ProfileController extends Controller
             $tab = 'odpovedi';
         }
 
-        $answers = Answer::query()->with(['question', 'user'])->where('user_id', $user->id)
+        $answers = Answer::query()->with(['question', 'user', 'style'])->where('user_id', $user->id)
             ->when(! $isOwner, fn ($q) => $q->where('is_anonymous', false)->publiclyVisible()->whereHas('question', fn ($w) => $w->visible()))
             ->latest('published_at');
         $questions = Question::query()->with('category')->where('author_id', $user->id)

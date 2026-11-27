@@ -26,6 +26,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property UserStatus $status
  * @property string|null $avatar_path
  * @property int|null $location_id
+ * @property int|null $favorite_style_id
  * @property Carbon|null $email_verified_at
  * @property Carbon|null $last_seen_at
  * @property Carbon|null $suspended_until
@@ -38,7 +39,7 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasApiTokens, HasFactory, HasRoles, Notifiable, TwoFactorAuthenticatable;
 
     /** Mass assignment only for safe profile fields; status/roles are set explicitly. */
-    protected $fillable = ['name', 'email', 'password', 'location_id'];
+    protected $fillable = ['name', 'email', 'password', 'location_id', 'favorite_style_id'];
 
     protected $hidden = ['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes', 'google_id', 'email'];
 
