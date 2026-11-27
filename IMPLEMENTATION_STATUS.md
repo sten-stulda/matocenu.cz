@@ -5,7 +5,7 @@ Průběžný stav podle `MASTER_PROMPT.md` §46. Aktualizuje se s každým PR.
 | Etapa | Obsah | Stav | PR |
 |---|---|---|---|
 | A – základ | Laravel 13, PostgreSQL, Redis, Docker, CI, autentizace (Fortify + Google), role a oprávnění, design systém, layouty, homepage, administrace (uživatelé, role, nastavení, feature flags, audit, GDPR, právní dokumenty), účet uživatele (profil, 2FA, relace, export, smazání) | hotovo | #1 |
-| B – komunita | otázky, odpovědi, kategorie, otázka dne, reakce, komentáře, moderace, profily | čeká | |
+| B – komunita | otázky (verze, typy, podobné otázky), odpovědi (limit 100 znaků Unicode, historie, anonymita, ochrana originálu), kategorie, otázka dne (kalendář, automatická publikace, vyhodnocení), reakce (unikátní klíč, skóre s důvěrou), komentáře (hloubka, blokování), nahlašování, moderace (automatické kontroly, fronta, historie, odvolání), profily, záložky, sledování, notifikace | hotovo | #2 |
 | C – AI | providery, OpenRouter, jazykové styly, stylizace, PromptOps, cache, náklady, limity | čeká | |
 | D – rozšíření | žebříčky, ocenění, hlášky, notifikace, sdílení, vyhledávání | čeká | |
 | E – potřeby | potřeby, lokality, zájem, ochota platit, nabídky, analytika | čeká | |
@@ -13,4 +13,5 @@ Průběžný stav podle `MASTER_PROMPT.md` §46. Aktualizuje se s každým PR.
 | G – dokončení | bezpečnost, optimalizace, dokumentace, deployment | čeká | |
 
 ## Poslední ověření
+- Etapa B: 93 testů, 315 asercí – vše prošlo; Pint OK; Larastan bez chyb.
 - Etapa A: `php artisan test` – 39 testů, 141 asercí, vše prošlo (PostgreSQL `matocenu_test`); Pint OK; Larastan level 5 bez chyb.

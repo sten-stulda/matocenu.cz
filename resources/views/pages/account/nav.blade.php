@@ -5,6 +5,7 @@
         'security' => ['Zabezpečení', 'account.security'],
         'privacy' => ['Soukromí a data', 'account.privacy'],
         'notifications' => ['Upozornění', 'account.notifications'],
+        'moderation' => ['Moderace', 'account.moderation'],
     ];
 @endphp
 <nav aria-label="Účet" class="flex gap-1 overflow-x-auto border-b border-line">

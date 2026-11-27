@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureCurrentConsents;
+use App\Http\Middleware\RequireFeature;
 use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -26,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api(append: [
             SecurityHeaders::class,
         ]);
+        $middleware->alias(['feature' => RequireFeature::class]);
         // Behind Cloudflare tunnel / docker proxy.
         $middleware->trustProxies(at: ['127.0.0.1', '172.16.0.0/12', '10.0.0.0/8', '192.168.0.0/16']);
     })
