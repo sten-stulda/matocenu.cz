@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Domain\Moderation\Enums\ModerationStatus;
 use App\Models\Concerns\Moderatable;
+use App\Models\Contracts\ModeratableContent;
 use Database\Factories\AnswerFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -33,7 +34,7 @@ use Illuminate\Support\Carbon;
  * @property Question $question
  * @property User $user
  */
-class Answer extends Model
+class Answer extends Model implements ModeratableContent
 {
     /** @use HasFactory<AnswerFactory> */
     use HasFactory, Moderatable, SoftDeletes;

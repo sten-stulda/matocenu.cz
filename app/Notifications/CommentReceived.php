@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\Answer;
 use App\Models\Comment;
+use App\Models\Need;
 use App\Models\Question;
 use Illuminate\Support\Str;
 
@@ -33,6 +34,7 @@ class CommentReceived extends MtcNotification
         return match (true) {
             $target instanceof Answer => $target->url().'#komentare',
             $target instanceof Question => $target->url().'#komentare',
+            $target instanceof Need => $target->url().'#komentare',
             default => route('home'),
         };
     }

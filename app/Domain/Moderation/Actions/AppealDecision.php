@@ -44,7 +44,7 @@ class AppealDecision
             $target = $appeal->action->content();
             if ($target) {
                 $this->moderation->transition($target, $overturn ? 'appeal_overturned' : 'appeal_upheld',
-                    $overturn ? ModerationStatus::Approved : $target->moderation_status, $moderator, $note);
+                    $overturn ? ModerationStatus::Approved : $target->moderationStatus(), $moderator, $note);
             }
         });
     }

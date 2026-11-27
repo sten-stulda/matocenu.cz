@@ -5,10 +5,8 @@ namespace App\Domain\Moderation\Services;
 use App\Domain\Administration\Services\AuditLogger;
 use App\Domain\Moderation\Enums\ModerationStatus;
 use App\Domain\Moderation\Events\ContentModerated;
-use App\Models\Answer;
-use App\Models\Comment;
+use App\Models\Contracts\ModeratableContent;
 use App\Models\ModerationAction;
-use App\Models\Question;
 use App\Models\Report;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -22,21 +20,19 @@ class Moderation
 {
     public function __construct(private CounterSync $counters, private AuditLogger $audit) {}
 
-    /** @param Question|Answer|Comment $model */
-    public function transition(Model $model, string $action, ModerationStatus $to, ?User $moderator = null, ?string $reason = null, ?string $risk = null): ModerationAction
+    public function transition(Model&ModeratableContent $model, string $action, ModerationStatus $to, ?User $moderator = null, ?string $reason = null, ?string $risk = null): ModerationAction
     {
         return DB::transaction(function () use ($model, $action, $to, $moderator, $reason, $risk) {
             $model->refresh();
-            $from = $model->moderation_status;
-            $model->moderation_status = $to;
-            $model->save();
+            $from = $model->moderationStatus();
+            $model->forceFill(['moderation_status' => $to])->save();
 
             $entry = ModerationAction::create([
                 'moderatable_type' => $model->getMorphClass(),
                 'moderatable_id' => $model->getKey(),
                 'moderator_id' => $moderator?->id,
                 'action' => $action,
-                'from_status' => $from?->value,
+                'from_status' => $from->value,
                 'to_status' => $to->value,
                 'reason' => $reason,
                 'risk' => $risk,
@@ -50,7 +46,7 @@ class Moderation
 
             $this->counters->afterVisibilityChange($model);
             if ($moderator) {
-                $this->audit->log('moderation.'.$action, $model, ['from' => $from?->value, 'to' => $to->value, 'reason' => $reason], $moderator->id);
+                $this->audit->log('moderation.'.$action, $model, ['from' => $from->value, 'to' => $to->value, 'reason' => $reason], $moderator->id);
             }
             DB::afterCommit(fn () => event(new ContentModerated($entry)));
 
@@ -71,7 +67,7 @@ class Moderation
 
     /** Record the automatic flag in history so the author can appeal. */
     /** @param array{ok: bool, flags: list<string>, risk: string|null, reason: string|null} $check */
-    public function recordAutoFlag(Question|Answer|Comment $model, array $check): void
+    public function recordAutoFlag(Model&ModeratableContent $model, array $check): void
     {
         ModerationAction::create([
             'moderatable_type' => $model->getMorphClass(),
@@ -79,7 +75,7 @@ class Moderation
             'moderator_id' => null,
             'action' => 'auto_flag',
             'from_status' => null,
-            'to_status' => $model->moderation_status->value,
+            'to_status' => $model->moderationStatus()->value,
             'reason' => $check['reason'],
             'risk' => $check['risk'],
         ]);

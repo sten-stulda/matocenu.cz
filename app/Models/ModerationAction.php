@@ -37,11 +37,11 @@ class ModerationAction extends Model
     }
 
     /** The moderated content (typed). */
-    public function content(): Answer|Comment|Question|null
+    public function content(): (Model&Contracts\ModeratableContent)|null
     {
         $m = $this->moderatable;
 
-        return $m instanceof Answer || $m instanceof Comment || $m instanceof Question ? $m : null;
+        return $m instanceof Contracts\ModeratableContent ? $m : null;
     }
 
     /** @return BelongsTo<User, $this> */

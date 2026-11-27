@@ -6,6 +6,7 @@ use App\Domain\Moderation\Enums\ModerationStatus;
 use App\Domain\Questions\Enums\PublicationStatus;
 use App\Domain\Questions\Enums\QuestionType;
 use App\Models\Concerns\Moderatable;
+use App\Models\Contracts\ModeratableContent;
 use Database\Factories\QuestionFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -37,7 +38,7 @@ use Illuminate\Support\Carbon;
  * @property int $followers_count
  * @property Carbon|null $last_activity_at
  */
-class Question extends Model
+class Question extends Model implements ModeratableContent
 {
     /** @use HasFactory<QuestionFactory> */
     use HasFactory, Moderatable, SoftDeletes;

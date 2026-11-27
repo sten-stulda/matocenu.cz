@@ -17,6 +17,7 @@ use App\Domain\Analytics\Widgets\CommunityWidget;
 use App\Domain\Identity\Services\CommunityPersonalData;
 use App\Domain\Moderation\Services\AppealCount;
 use App\Domain\Moderation\Services\QueueCount;
+use App\Domain\Needs\Services\NeedsPersonalData;
 
 /*
  | Application defaults. Values marked "setting" can be overridden by admins in
@@ -42,6 +43,7 @@ return [
     'personal_data' => [
         CommunityPersonalData::class,
         AiPersonalData::class,
+        NeedsPersonalData::class,
     ],
 
     // Admin menu counters: route name => invokable class returning int.
@@ -70,6 +72,7 @@ return [
         'daily_evaluate' => 'Denní vyhodnocení otázky dne',
         'rankings' => 'Přepočet žebříčků (každou hodinu)',
         'quotes' => 'Vyhodnocení hlášky dne / týdne / měsíce',
+        'needs_digest' => 'Týdenní souhrn potřeb pro sledující',
     ],
 
     'settings' => [

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Domain\Moderation\Enums\ModerationStatus;
 use App\Models\Concerns\Moderatable;
+use App\Models\Contracts\ModeratableContent;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,7 +22,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $edited_at
  * @property User $user
  */
-class Comment extends Model
+class Comment extends Model implements ModeratableContent
 {
     use Moderatable, SoftDeletes;
 
@@ -40,11 +41,11 @@ class Comment extends Model
         return $this->morphTo();
     }
 
-    public function target(): Answer|Question|null
+    public function target(): (Model&ModeratableContent)|null
     {
         $t = $this->commentable;
 
-        return $t instanceof Answer || $t instanceof Question ? $t : null;
+        return $t instanceof ModeratableContent ? $t : null;
     }
 
     /** @return BelongsTo<User, $this> */

@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Needs\Services\NeedsDigest;
 use App\Domain\Quotes\Services\QuoteSelector;
 use App\Domain\Rankings\Services\RankingEngine;
 use Illuminate\Support\Facades\Cache;
@@ -23,3 +24,6 @@ Schedule::call(function () {
     }
     Cache::forever('mtc:task:quotes', now()->toIso8601String());
 })->dailyAt('00:20')->timezone('Europe/Prague')->name('quotes-award')->onOneServer();
+
+Schedule::call(fn () => app(NeedsDigest::class)->send())
+    ->weeklyOn(1, '08:00')->timezone('Europe/Prague')->name('needs-digest')->onOneServer();
