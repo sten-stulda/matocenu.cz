@@ -58,12 +58,13 @@ class LanguageStyle extends Model
     /** @return Collection<int, LanguageStyle> */
     public static function active(): Collection
     {
-        return Cache::remember('mtc:styles:active', 600, fn () => static::where('is_active', true)->orderBy('sort_order')->get());
+        // Cache raw attributes, not objects (Laravel 13 cache.serializable_classes = false).
+        return static::hydrate(Cache::remember('mtc:styles:active:attrs', 600, fn () => static::where('is_active', true)->orderBy('sort_order')->get()->map(fn (self $m) => $m->getAttributes())->all()));
     }
 
     public static function flush(): void
     {
-        Cache::forget('mtc:styles:active');
+        Cache::forget('mtc:styles:active:attrs');
     }
 
     protected static function booted(): void

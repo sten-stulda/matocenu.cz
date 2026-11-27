@@ -36,7 +36,9 @@ return [
 
         'array' => [
             'driver' => 'array',
-            'serialize' => false,
+            // Tests use this store: serialize like Redis does in production so that
+            // caching objects (refused by serializable_classes) fails in tests too.
+            'serialize' => (bool) env('CACHE_ARRAY_SERIALIZE', false),
         ],
 
         'database' => [
