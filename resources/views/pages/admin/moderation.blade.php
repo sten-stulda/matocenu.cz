@@ -25,6 +25,8 @@ new #[Layout('layouts::admin')] #[Title('Moderační fronta')] class extends Com
             'question' => Question::withTrashed()->findOrFail($id),
             'answer' => Answer::withTrashed()->findOrFail($id),
             'comment' => Comment::withTrashed()->findOrFail($id),
+            'need' => \App\Models\Need::withTrashed()->findOrFail($id),
+            'need_offer' => \App\Models\NeedOffer::withTrashed()->findOrFail($id),
             default => abort(404),
         };
     }
@@ -48,11 +50,11 @@ new #[Layout('layouts::admin')] #[Title('Moderační fronta')] class extends Com
     {
         $statuses = $this->status === 'open' ? ['pending', 'under_review', 'reported'] : [$this->status];
         $items = collect();
-        foreach (['question' => Question::class, 'answer' => Answer::class, 'comment' => Comment::class] as $type => $class) {
+        foreach (['question' => Question::class, 'answer' => Answer::class, 'comment' => Comment::class, 'need' => \App\Models\Need::class, 'need_offer' => \App\Models\NeedOffer::class] as $type => $class) {
             $q = $class::query()->whereIn('moderation_status', $statuses)->latest('updated_at')->limit(50);
             if ($type === 'answer') {
                 $q->with(['user', 'question']);
-            } elseif ($type === 'comment') {
+            } elseif (in_array($type, ['comment', 'need', 'need_offer'], true)) {
                 $q->with('user');
             } else {
                 $q->with('author');
@@ -90,10 +92,10 @@ new #[Layout('layouts::admin')] #[Title('Moderační fronta')] class extends Com
                     <td class="max-w-md">
                         <p class="font-semibold">„{{ \Illuminate\Support\Str::limit($m->moderationExcerpt(), 160) }}“</p>
                         @if ($i['type'] === 'answer' && $m->is_stylized)<p class="text-xs text-muted">Originál (jen pro moderaci): „{{ $m->original_text }}“</p>@endif
-                        <p class="text-xs text-muted">{{ match ($i['type']) { 'answer' => $m->user?->name, 'comment' => $m->user?->name, default => $m->author?->name ?? 'redakce' } }} · {{ local_time($m->created_at)->diffForHumans() }}
+                        <p class="text-xs text-muted">{{ $i['type'] === 'question' ? ($m->author?->name ?? 'redakce') : $m->user?->name }} · {{ local_time($m->created_at)->diffForHumans() }}
                             @if ($i['type'] === 'answer') · <a href="{{ $m->question?->url() }}" target="_blank">otázka</a>@endif</p>
                     </td>
-                    <td>{{ ['question' => 'Otázka', 'answer' => 'Odpověď', 'comment' => 'Komentář'][$i['type']] }}<br><span class="text-xs text-muted">{{ $m->moderation_status->label() }}</span></td>
+                    <td>{{ ['question' => 'Otázka', 'answer' => 'Odpověď', 'comment' => 'Komentář', 'need' => 'Potřeba', 'need_offer' => 'Nabídka'][$i['type']] }}<br><span class="text-xs text-muted">{{ $m->moderation_status->label() }}</span></td>
                     <td class="text-sm">
                         @if ($rep->isNotEmpty())Nahlášeno {{ $rep->count() }}× ({{ $rep->map(fn ($r) => $r->reason->label())->unique()->implode(', ') }})@endif
                         @if ($flag)<br>{{ $flag->reason }}@endif

@@ -12,6 +12,9 @@ use App\Listeners\GamificationListener;
 use App\Models\Answer;
 use App\Models\Category;
 use App\Models\Comment;
+use App\Models\Location;
+use App\Models\Need;
+use App\Models\NeedOffer;
 use App\Models\Question;
 use App\Models\User;
 use Carbon\Carbon;
@@ -44,6 +47,9 @@ class AppServiceProvider extends ServiceProvider
             'answer' => Answer::class,
             'comment' => Comment::class,
             'category' => Category::class,
+            'need' => Need::class,
+            'need_offer' => NeedOffer::class,
+            'location' => Location::class,
         ]);
         Model::preventLazyLoading(! $this->app->isProduction());
         Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());

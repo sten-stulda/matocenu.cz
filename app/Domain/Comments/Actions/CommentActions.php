@@ -8,9 +8,8 @@ use App\Domain\Comments\Exceptions\CommentException;
 use App\Domain\Moderation\Enums\ModerationStatus;
 use App\Domain\Moderation\Services\CounterSync;
 use App\Domain\Moderation\Services\Moderation;
-use App\Models\Answer;
 use App\Models\Comment;
-use App\Models\Question;
+use App\Models\Contracts\ModeratableContent;
 use App\Models\User;
 use App\Support\Text;
 use Illuminate\Database\Eloquent\Model;
@@ -20,8 +19,7 @@ class CommentActions
 {
     public function __construct(private Settings $settings, private Moderation $moderation, private CounterSync $counters) {}
 
-    /** @param Question|Answer $target */
-    public function add(User $user, Model $target, string $body, ?Comment $parent = null): Comment
+    public function add(User $user, Model&ModeratableContent $target, string $body, ?Comment $parent = null): Comment
     {
         $body = Text::clean($body, multiline: true);
         $max = $this->settings->int('comments.max_length');

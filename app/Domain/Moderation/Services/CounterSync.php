@@ -3,8 +3,11 @@
 namespace App\Domain\Moderation\Services;
 
 use App\Domain\Moderation\Enums\ModerationStatus;
+use App\Domain\Needs\Services\NeedCounters;
 use App\Models\Answer;
 use App\Models\Comment;
+use App\Models\Need;
+use App\Models\NeedOffer;
 use App\Models\Question;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -43,6 +46,10 @@ class CounterSync
             $this->question($model->id);
         } elseif ($model instanceof Answer) {
             $this->question($model->question_id);
+        } elseif ($model instanceof Need) {
+            app(NeedCounters::class)->need($model->id);
+        } elseif ($model instanceof NeedOffer) {
+            app(NeedCounters::class)->need($model->need_id);
         } elseif ($model instanceof Comment) {
             $target = $model->commentable_type;
             if ($target === 'answer') {

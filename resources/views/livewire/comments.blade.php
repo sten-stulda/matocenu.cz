@@ -24,10 +24,11 @@ new class extends Component {
     public string $editBody = '';
     public int $limit = 30;
 
-    private function target(): Question|Answer
+    private function target(): Question|Answer|\App\Models\Need
     {
         return match ($this->type) {
             'question' => Question::findOrFail($this->id),
+            'need' => \App\Models\Need::findOrFail($this->id),
             'answer' => Answer::findOrFail($this->id),
             default => abort(404),
         };

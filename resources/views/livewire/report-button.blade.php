@@ -36,6 +36,8 @@ new class extends Component {
             'answer' => Answer::findOrFail($this->id),
             'comment' => Comment::findOrFail($this->id),
             'question' => Question::findOrFail($this->id),
+            'need' => \App\Models\Need::findOrFail($this->id),
+            'need_offer' => \App\Models\NeedOffer::findOrFail($this->id),
             default => abort(404),
         };
         try {

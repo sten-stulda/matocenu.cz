@@ -7,9 +7,7 @@ use App\Domain\Moderation\Enums\ModerationStatus;
 use App\Domain\Moderation\Enums\ReportReason;
 use App\Domain\Moderation\Exceptions\ModerationException;
 use App\Domain\Moderation\Services\Moderation;
-use App\Models\Answer;
-use App\Models\Comment;
-use App\Models\Question;
+use App\Models\Contracts\ModeratableContent;
 use App\Models\Report;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -20,8 +18,7 @@ class ReportContent
 {
     public function __construct(private Moderation $moderation, private Settings $settings) {}
 
-    /** @param Question|Answer|Comment $target */
-    public function __invoke(User $reporter, Model $target, ReportReason $reason, ?string $note = null): Report
+    public function __invoke(User $reporter, Model&ModeratableContent $target, ReportReason $reason, ?string $note = null): Report
     {
         if ($target->moderationOwnerId() === $reporter->id) {
             throw new ModerationException('Vlastní příspěvek nahlásit nemůžeš – můžeš ho upravit nebo smazat.');
@@ -45,12 +42,11 @@ class ReportContent
                 ->where('status', 'open')->distinct()->count('reporter_id');
             $threshold = max(1, $this->settings->int('moderation.auto_hide_reports'));
 
-            if ($target->moderation_status === ModerationStatus::Approved || $target->moderation_status === ModerationStatus::Reported) {
+            if (in_array($target->moderationStatus(), [ModerationStatus::Approved, ModerationStatus::Reported], true)) {
                 if ($distinct >= $threshold) {
                     $this->moderation->transition($target, 'auto_hide', ModerationStatus::Hidden, null, "Nahlášeno {$distinct}× – čeká na moderátora", $reason->risk());
-                } elseif ($target->moderation_status === ModerationStatus::Approved) {
-                    $target->moderation_status = ModerationStatus::Reported;
-                    $target->save();
+                } elseif ($target->moderationStatus() === ModerationStatus::Approved) {
+                    $target->forceFill(['moderation_status' => ModerationStatus::Reported])->save();
                 }
             }
         });

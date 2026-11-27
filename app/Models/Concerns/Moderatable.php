@@ -31,6 +31,11 @@ trait Moderatable
         return $this->morphMany(Report::class, 'reportable');
     }
 
+    public function moderationStatus(): ModerationStatus
+    {
+        return $this->moderation_status;
+    }
+
     public function isPubliclyVisible(): bool
     {
         return $this->moderation_status->isPublic() && ! $this->trashed();
