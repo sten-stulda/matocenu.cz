@@ -8,6 +8,9 @@ use App\Models\DailyQuestion;
 use App\Models\Question;
 use App\Models\Quote;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
@@ -25,16 +28,28 @@ class HomepageData
         $entry = $this->daily->current();
         $question = $entry?->question;
 
-        $shared = Cache::remember('mtc:home:shared', 60, fn () => [
-            'popular' => $this->popular(),
-            'discussed' => $this->discussed(),
-            'latest' => Question::query()->visible()->with('category')->latest('published_at')->limit(5)->get(),
-            'unanswered' => Question::query()->live()->where('answers_count', 0)->latest('published_at')->limit(3)->get(),
-            'bestWeek' => $this->bestAnswers(now()->subDays(7), 3),
-            'quoteOfDay' => $this->bestAnswers(now()->subDay(), 1)->first(),
-            'quote' => Quote::with(['answer.user', 'answer.style'])->where('period', 'day')->whereHas('answer', fn ($q) => $q->publiclyVisible())->latest('awarded_at')->first(),
-            'archive' => DailyQuestion::with('question')->where('status', 'published')->orderByDesc('date')->skip(1)->limit(5)->get(),
+        // Only IDs go to the cache: Laravel 13 refuses to unserialize objects (cache.serializable_classes = false).
+        $ids = Cache::remember('mtc:home:shared:ids', 60, fn () => [
+            'popular' => $this->popular()->pluck('id')->all(),
+            'discussed' => $this->discussed()->pluck('id')->all(),
+            'latest' => Question::query()->visible()->latest('published_at')->limit(5)->pluck('id')->all(),
+            'unanswered' => Question::query()->live()->where('answers_count', 0)->latest('published_at')->limit(3)->pluck('id')->all(),
+            'bestWeek' => $this->bestAnswers(now()->subDays(7), 3)->pluck('id')->all(),
+            'quoteOfDay' => $this->bestAnswers(now()->subDay(), 1)->pluck('id')->all(),
+            'quote' => Quote::where('period', 'day')->whereHas('answer', fn ($q) => $q->publiclyVisible())->latest('awarded_at')->limit(1)->pluck('id')->all(),
+            'archive' => DailyQuestion::where('status', 'published')->orderByDesc('date')->skip(1)->limit(5)->pluck('id')->all(),
         ]);
+        $answers = fn () => Answer::query()->with(['user', 'question', 'style'])->publiclyVisible();
+        $shared = [
+            'popular' => $this->ordered(Question::query()->visible(), $ids['popular']),
+            'discussed' => $this->ordered(Question::query()->visible(), $ids['discussed']),
+            'latest' => $this->ordered(Question::query()->visible()->with('category'), $ids['latest']),
+            'unanswered' => $this->ordered(Question::query()->live(), $ids['unanswered']),
+            'bestWeek' => $this->ordered($answers(), $ids['bestWeek']),
+            'quoteOfDay' => $this->ordered($answers(), $ids['quoteOfDay'])->first(),
+            'quote' => $this->ordered(Quote::with(['answer.user', 'answer.style']), $ids['quote'])->first(),
+            'archive' => $this->ordered(DailyQuestion::with('question'), $ids['archive']),
+        ];
 
         return $shared + [
             'daily' => $entry,
@@ -93,6 +108,25 @@ class HomepageData
 
         return Question::query()->visible()->whereIn('location_id', $region->descendantIds())
             ->latest('published_at')->limit(3)->get();
+    }
+
+    /**
+     * Reload cached IDs in their original order (still applying the query's visibility scopes).
+     *
+     * @template TModel of Model
+     *
+     * @param  Builder<TModel>  $query
+     * @param  list<int>  $ids
+     * @return EloquentCollection<int, TModel>
+     */
+    private function ordered(Builder $query, array $ids): EloquentCollection
+    {
+        if ($ids === []) {
+            return $query->getModel()->newCollection();
+        }
+        $found = $query->whereKey($ids)->get()->keyBy(fn (Model $m) => $m->getKey());
+
+        return $query->getModel()->newCollection(array_values(array_filter(array_map(fn ($id) => $found->get($id), $ids))));
     }
 
     public static function visibleStatuses(): array
