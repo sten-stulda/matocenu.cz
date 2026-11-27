@@ -11,6 +11,7 @@ use App\Models\Comment;
 use App\Models\Follow;
 use App\Models\ModerationAppeal;
 use App\Models\Question;
+use App\Models\Quote;
 use App\Models\Reaction;
 use App\Models\Report;
 use App\Models\User;
@@ -39,6 +40,9 @@ class CommunityPersonalData implements PersonalDataContributor
             'reakce' => Reaction::with('type:id,label')->where('user_id', $user->id)->get()->map(fn ($r) => ['reakce' => $r->type?->label, 'na' => $r->reactable_type.' #'.$r->reactable_id, 'kdy' => $r->created_at?->toIso8601String()])->all(),
             'nahlaseni' => Report::where('reporter_id', $user->id)->get()->map(fn ($r) => ['duvod' => $r->reason->label(), 'kdy' => $r->created_at?->toIso8601String()])->all(),
             'odvolani' => ModerationAppeal::where('user_id', $user->id)->get(['message', 'status', 'created_at'])->toArray(),
+            'oceneni' => DB::table('user_achievements')->join('achievements', 'achievements.id', '=', 'user_achievements.achievement_id')
+                ->where('user_achievements.user_id', $user->id)->get(['achievements.name as oceneni', 'user_achievements.awarded_at as kdy'])->map(fn ($r) => (array) $r)->all(),
+            'hlasky' => Quote::where('author_id', $user->id)->get(['period', 'period_key', 'display_text'])->toArray(),
             'zalozky' => Bookmark::where('user_id', $user->id)->count(),
             'sledovane' => Follow::where('user_id', $user->id)->count(),
         ];

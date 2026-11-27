@@ -8,6 +8,7 @@ use App\Domain\AI\Services\AiVariantResolver;
 use App\Domain\Answers\Contracts\VariantResolver;
 use App\Domain\Identity\Enums\Role;
 use App\Listeners\CommunityNotifications;
+use App\Listeners\GamificationListener;
 use App\Models\Answer;
 use App\Models\Category;
 use App\Models\Comment;
@@ -56,6 +57,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::before(fn (User $user) => $user->hasRole(Role::Superadmin->value) ? true : null);
 
         Event::subscribe(CommunityNotifications::class);
+        Event::subscribe(GamificationListener::class);
 
         Blade::if('feature', fn (string $key) => feature($key));
         Blade::directive('cspNonce', fn () => '<?php if ($__n = \\Illuminate\\Support\\Facades\\Vite::cspNonce()) echo \'nonce="\'.e($__n).\'"\'; ?>');
