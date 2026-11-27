@@ -2,7 +2,7 @@
 <x-layouts::app current="home">
     <h1 class="sr-only">MáToCenu.cz – {{ setting('brand.slogan') }}</h1>
 
-    <div class="grid gap-6 lg:grid-cols-[1fr_320px]">
+    <div class="grid items-start gap-6 lg:grid-cols-[1fr_320px]">
         {{-- Question of the day --}}
         <section aria-labelledby="otazka-dne" class="relative overflow-hidden rounded-[10px] bg-forest p-6 text-cream sm:p-10">
             <svg width="220" height="220" viewBox="0 0 64 64" aria-hidden="true" class="pointer-events-none absolute -right-8 -top-8 opacity-[.08]"><path d="M24 21c0-4.5 3.6-7.5 8.5-7.5S41 16.5 41 21c0 6-8 5.5-8 11" fill="none" stroke="#F7F3E9" stroke-width="5" stroke-linecap="round"/><circle cx="33" cy="42" r="5" fill="#F7F3E9"/></svg>
@@ -22,7 +22,15 @@
         </section>
 
         <aside class="space-y-6">
-            <div class="rounded-[10px] bg-mustard p-6 text-charcoal">
+            @if (! empty($quoteOfDay))
+                <a href="{{ $quoteOfDay->url() }}" class="block rounded-[10px] bg-mustard p-6 text-charcoal no-underline">
+                    <p class="text-[12px] font-bold uppercase tracking-[.12em]">Hláška dne</p>
+                    <p class="mt-2 font-display text-2xl leading-tight font-bold">„{{ $quoteOfDay->display_text }}“</p>
+                    <p class="mt-3 text-[13px] font-semibold">{{ $quoteOfDay->publicAuthor()?->name ?? 'Anonym' }} · {{ cz_plural($quoteOfDay->reactions_count, 'reakce', 'reakce', 'reakcí') }}</p>
+                </a>
+            @endif
+            @includeIf('pages.home.leaderboard-widget')
+            <div class="rounded-[10px] bg-mustard p-6 text-charcoal {{ ! empty($quoteOfDay) ? 'hidden lg:block lg:bg-mustard-100 dark:lg:bg-surface dark:lg:text-ink' : '' }}">
                 <p class="text-[12px] font-bold uppercase tracking-[.12em]">Jak to funguje</p>
                 <ol class="mt-3 space-y-2 text-[15px] font-semibold">
                     <li>1. Každý den jedna otázka.</li>

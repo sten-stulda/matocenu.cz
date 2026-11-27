@@ -1,9 +1,15 @@
 <?php
 
+use App\Domain\Administration\ReferenceData\CategoriesSyncer;
 use App\Domain\Administration\ReferenceData\FeatureFlagsSyncer;
 use App\Domain\Administration\ReferenceData\LegalDocumentsSyncer;
 use App\Domain\Administration\ReferenceData\LocationsSyncer;
+use App\Domain\Administration\ReferenceData\ReactionTypesSyncer;
 use App\Domain\Administration\ReferenceData\RolesSyncer;
+use App\Domain\Analytics\Widgets\CommunityWidget;
+use App\Domain\Identity\Services\CommunityPersonalData;
+use App\Domain\Moderation\Services\AppealCount;
+use App\Domain\Moderation\Services\QueueCount;
 
 /*
  | Application defaults. Values marked "setting" can be overridden by admins in
@@ -18,24 +24,35 @@ return [
         FeatureFlagsSyncer::class,
         LocationsSyncer::class,
         LegalDocumentsSyncer::class,
+        CategoriesSyncer::class,
+        ReactionTypesSyncer::class,
     ],
 
     // GDPR: modules storing personal data (App\Domain\Identity\Contracts\PersonalDataContributor).
-    'personal_data' => [],
+    'personal_data' => [
+        CommunityPersonalData::class,
+    ],
 
     // Admin menu counters: route name => invokable class returning int.
-    'admin_badges' => [],
+    'admin_badges' => [
+        'admin.moderation' => QueueCount::class,
+        'admin.appeals' => AppealCount::class,
+    ],
 
     // Retention pruners (invokable classes returning a summary line), run by matocenu:prune.
     'pruners' => [],
 
     // Admin dashboard widgets (App\Domain\Analytics\Contracts\DashboardWidget).
-    'admin_widgets' => [],
+    'admin_widgets' => [
+        CommunityWidget::class,
+    ],
 
     // Scheduled tasks shown on the dashboard: cache key suffix => label (see routes/console.php).
     'scheduled_tasks' => [
         'heartbeat' => 'Kontrola plánovače (každou minutu)',
         'prune' => 'Úklid dat podle retenčních lhůt',
+        'daily_publish' => 'Publikace otázky dne',
+        'daily_evaluate' => 'Denní vyhodnocení otázky dne',
     ],
 
     'settings' => [

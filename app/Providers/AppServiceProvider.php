@@ -4,13 +4,22 @@ namespace App\Providers;
 
 use App\Domain\Administration\Services\FeatureFlags;
 use App\Domain\Administration\Services\Settings;
+use App\Domain\Answers\Contracts\VariantResolver;
+use App\Domain\Answers\Services\NullVariantResolver;
 use App\Domain\Identity\Enums\Role;
+use App\Listeners\CommunityNotifications;
+use App\Models\Answer;
+use App\Models\Category;
+use App\Models\Comment;
+use App\Models\Question;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -22,11 +31,19 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->singleton(Settings::class);
         $this->app->singleton(FeatureFlags::class);
+        $this->app->bindIf(VariantResolver::class, NullVariantResolver::class);
     }
 
     public function boot(): void
     {
         Carbon::setLocale('cs');
+        Relation::morphMap([
+            'user' => User::class,
+            'question' => Question::class,
+            'answer' => Answer::class,
+            'comment' => Comment::class,
+            'category' => Category::class,
+        ]);
         Model::preventLazyLoading(! $this->app->isProduction());
         Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
 
@@ -37,6 +54,8 @@ class AppServiceProvider extends ServiceProvider
 
         // Superadmin can do everything; everyone else goes through permissions/policies.
         Gate::before(fn (User $user) => $user->hasRole(Role::Superadmin->value) ? true : null);
+
+        Event::subscribe(CommunityNotifications::class);
 
         Blade::if('feature', fn (string $key) => feature($key));
         Blade::directive('cspNonce', fn () => '<?php if ($__n = \\Illuminate\\Support\\Facades\\Vite::cspNonce()) echo \'nonce="\'.e($__n).\'"\'; ?>');
