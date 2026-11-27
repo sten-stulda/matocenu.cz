@@ -15,7 +15,7 @@ class AnswerListing
     {
         $region = $sort === 'kraj' ? $viewer?->location?->region() : null;
 
-        return Answer::query()->with(['user', 'question'])
+        return Answer::query()->with(['user', 'question', 'style'])
             ->where('question_id', $question->id)->publiclyVisible()
             // Content of people the viewer blocked is not shown to them.
             ->when($viewer, fn ($q) => $q->whereNotIn('user_id', DB::table('user_blocks')->where('blocker_id', $viewer->id)->select('blocked_id')))

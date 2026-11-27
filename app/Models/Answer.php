@@ -70,6 +70,12 @@ class Answer extends Model
         return $this->belongsTo(User::class);
     }
 
+    /** @return BelongsTo<LanguageStyle, $this> */
+    public function style(): BelongsTo
+    {
+        return $this->belongsTo(LanguageStyle::class, 'language_style_id');
+    }
+
     /** @return BelongsTo<QuestionOption, $this> */
     public function option(): BelongsTo
     {

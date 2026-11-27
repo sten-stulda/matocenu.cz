@@ -24,15 +24,16 @@
                 @if ($question->location)<span class="badge-outline">{{ $question->location->name }}</span>@endif
                 @if (! $question->isVisible())<span class="badge-dashed">{{ $question->moderation_status->label() }} – vidíš jen ty a moderátoři</span>@endif
             </div>
-            <h1 class="font-display text-[34px] leading-[1.05] font-extrabold tracking-tight sm:text-[52px]">{{ $question->text }}</h1>
+            <div class="min-w-0 space-y-4">
+            <h1 class="font-display text-[34px] leading-[1.05] font-extrabold tracking-tight sm:text-[52px]" data-question-text>{{ $question->text }}</h1>
+            @include('pages.questions.partials.style-switcher', ['question' => $question])
+            </div>
             <p class="text-sm text-muted">
                 Položil{{ $author ? '/a' : 'a' }} <b class="text-ink">{{ $author?->name ?? ($question->author_id ? 'Anonym' : 'redakce') }}</b>
                 · {{ local_time($question->published_at)?->diffForHumans() }} · {{ cz_plural($question->answers_count, 'odpověď', 'odpovědi', 'odpovědí') }}
                 @if ($question->followers_count) · {{ cz_plural($question->followers_count, 'člověk sleduje', 'lidé sledují', 'lidí sleduje') }}@endif
             </p>
             <livewire:question-actions :question-id="$question->id" />
-
-            @includeIf('pages.questions.partials.style-switcher')
 
             <livewire:answer-composer :question-id="$question->id" />
 

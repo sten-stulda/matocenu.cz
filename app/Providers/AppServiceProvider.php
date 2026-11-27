@@ -4,8 +4,8 @@ namespace App\Providers;
 
 use App\Domain\Administration\Services\FeatureFlags;
 use App\Domain\Administration\Services\Settings;
+use App\Domain\AI\Services\AiVariantResolver;
 use App\Domain\Answers\Contracts\VariantResolver;
-use App\Domain\Answers\Services\NullVariantResolver;
 use App\Domain\Identity\Enums\Role;
 use App\Listeners\CommunityNotifications;
 use App\Models\Answer;
@@ -31,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->singleton(Settings::class);
         $this->app->singleton(FeatureFlags::class);
-        $this->app->bindIf(VariantResolver::class, NullVariantResolver::class);
+        $this->app->bind(VariantResolver::class, AiVariantResolver::class);
     }
 
     public function boot(): void

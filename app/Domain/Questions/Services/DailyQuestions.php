@@ -10,6 +10,7 @@ use App\Domain\Questions\Events\DailyQuestionPublished;
 use App\Domain\Questions\Exceptions\QuestionException;
 use App\Models\Answer;
 use App\Models\DailyQuestion;
+use App\Models\LanguageStyle;
 use App\Models\Question;
 use App\Models\User;
 use Carbon\CarbonImmutable;
@@ -40,7 +41,7 @@ class DailyQuestions
     {
         return DailyQuestion::query()->where('status', 'published')
             ->whereHas('question', fn ($q) => $q->visible())
-            ->with('question.category')
+            ->with(['question.category', 'style'])
             ->orderByDesc('date')->first();
     }
 
@@ -64,6 +65,7 @@ class DailyQuestions
         }
         $entry = DailyQuestion::updateOrCreate(['date' => $date->toDateString()], [
             'question_id' => $question->id,
+            'language_style_id' => $this->scheduledStyleId($date),
             'status' => $approve ? 'approved' : 'planned',
             'planned_by' => $editor->id,
         ]);
@@ -71,6 +73,15 @@ class DailyQuestions
         $this->audit->log('daily.planned', $entry, ['date' => $date->toDateString(), 'question_id' => $question->id, 'approved' => $approve]);
 
         return $entry;
+    }
+
+    /** Weekly "personality of the day" from settings (1 = Monday … 7 = Sunday). */
+    public function scheduledStyleId(CarbonImmutable $date): ?int
+    {
+        $map = (array) $this->settings->get('daily.style_schedule');
+        $slug = $map[(string) $date->dayOfWeekIso] ?? null;
+
+        return $slug ? LanguageStyle::where('slug', $slug)->where('is_active', true)->value('id') : null;
     }
 
     public function approve(User $editor, DailyQuestion $entry): void

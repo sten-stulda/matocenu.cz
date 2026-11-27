@@ -11,10 +11,16 @@ new #[Layout('layouts::admin')] #[Title('Systémová nastavení')] class extends
 
     public function mount(Settings $settings): void
     {
-        foreach (config('matocenu.settings') as $key => [$default, $type]) {
+        foreach ($this->editable() as $key => [$default, $type]) {
             $v = $settings->get($key);
             $this->values[$this->field($key)] = $type === 'list' ? implode("\n", (array) $v) : $v;
         }
+    }
+
+    /** Settings with their own UI (type json) are edited elsewhere. */
+    private function editable(): array
+    {
+        return array_filter(config('matocenu.settings'), fn ($d) => $d[1] !== 'json');
     }
 
     private function field(string $key): string
@@ -26,7 +32,7 @@ new #[Layout('layouts::admin')] #[Title('Systémová nastavení')] class extends
     {
         $this->authorize('settings.manage');
         $rules = [];
-        foreach (config('matocenu.settings') as $key => [$default, $type]) {
+        foreach ($this->editable() as $key => [$default, $type]) {
             $rules['values.'.$this->field($key)] = match ($type) {
                 'int' => ['required', 'integer', 'min:0', 'max:100000'],
                 'float' => ['required', 'numeric', 'min:0', 'max:1000'],
@@ -38,7 +44,7 @@ new #[Layout('layouts::admin')] #[Title('Systémová nastavení')] class extends
         }
         $this->validate($rules + ['values.answers__max_length' => ['required', 'integer', 'min:10', 'max:500']]);
 
-        foreach (config('matocenu.settings') as $key => [$default, $type]) {
+        foreach ($this->editable() as $key => [$default, $type]) {
             $raw = $this->values[$this->field($key)] ?? null;
             $value = match ($type) {
                 'int' => (int) $raw,
@@ -57,7 +63,7 @@ new #[Layout('layouts::admin')] #[Title('Systémová nastavení')] class extends
 
     public function with(): array
     {
-        return ['groups' => collect(config('matocenu.settings'))->map(fn ($d, $k) => ['key' => $k, 'type' => $d[1], 'label' => $d[2], 'group' => $d[3]])->groupBy('group')];
+        return ['groups' => collect($this->editable())->map(fn ($d, $k) => ['key' => $k, 'type' => $d[1], 'label' => $d[2], 'group' => $d[3]])->groupBy('group')];
     }
 }; ?>
 

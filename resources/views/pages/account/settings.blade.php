@@ -13,6 +13,7 @@ new #[Title('Nastavení')] class extends Component {
 
     public string $name = '';
     public ?int $locationId = null;
+    public ?int $favoriteStyleId = null;
     public $avatar = null;
 
     /** @var array<string, bool> */
@@ -27,6 +28,7 @@ new #[Title('Nastavení')] class extends Component {
         $prefs = $user->preferences();
         $this->name = $user->name;
         $this->locationId = $user->location_id;
+        $this->favoriteStyleId = $user->favorite_style_id;
         $this->privacy = $prefs->only(['anonymous_by_default', 'show_original_by_default', 'humor_on_sensitive', 'show_achievements', 'show_region']);
         foreach (NotificationTypes::all() as $type => $def) {
             foreach ($def['channels'] as $channel) {
@@ -47,6 +49,7 @@ new #[Title('Nastavení')] class extends Component {
         $action(auth()->user(), [
             'name' => $this->name,
             'location_id' => $this->locationId,
+            'favorite_style_id' => $this->favoriteStyleId,
             'avatar' => $this->avatar,
         ]);
         $this->avatar = null;
@@ -110,6 +113,14 @@ new #[Title('Nastavení')] class extends Component {
             </select>
             <p class="help">Jen kraj nebo okres – přesnou polohu nikdy nezjišťujeme. Slouží pro „Otázky z okolí“ a krajské žebříčky.</p>
             @error('location_id')<p class="error">{{ $message }}</p>@enderror
+        </div>
+        <div>
+            <label for="style" class="label">Oblíbený jazykový styl</label>
+            <select id="style" wire:model="favoriteStyleId" class="input">
+                <option value="">Bez preference</option>
+                @foreach (\App\Models\LanguageStyle::active()->filter(fn ($s) => $s->isGeneratable()) as $s)<option value="{{ $s->id }}">{{ $s->name }}</option>@endforeach
+            </select>
+            <p class="help">Předvybere se při odpovídání.</p>
         </div>
         <div class="flex items-center gap-3">
             <button class="btn-forest" wire:loading.attr="disabled">Uložit profil</button>

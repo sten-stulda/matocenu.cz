@@ -15,11 +15,17 @@ class DailyQuestion extends Model
 {
     public const STATUSES = ['planned' => 'návrh', 'approved' => 'schváleno', 'published' => 'zveřejněno', 'skipped' => 'vynecháno'];
 
-    protected $fillable = ['date', 'question_id', 'status', 'planned_by', 'published_at', 'evaluated_at', 'evaluation'];
+    protected $fillable = ['date', 'question_id', 'language_style_id', 'status', 'planned_by', 'published_at', 'evaluated_at', 'evaluation'];
 
     protected function casts(): array
     {
         return ['date' => 'date', 'published_at' => 'datetime', 'evaluated_at' => 'datetime', 'evaluation' => 'array'];
+    }
+
+    /** @return BelongsTo<LanguageStyle, $this> */
+    public function style(): BelongsTo
+    {
+        return $this->belongsTo(LanguageStyle::class, 'language_style_id');
     }
 
     /** @return BelongsTo<Question, $this> */

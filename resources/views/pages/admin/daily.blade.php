@@ -74,7 +74,7 @@ new #[Layout('layouts::admin')] #[Title('Plán otázky dne')] class extends Comp
     public function with(DailyQuestions $daily): array
     {
         $today = $daily->localNow()->startOfDay();
-        $entries = DailyQuestion::with('question')->whereBetween('date', [$today->subDays(7)->toDateString(), $today->addDays(30)->toDateString()])->get()->keyBy(fn ($e) => $e->date->toDateString());
+        $entries = DailyQuestion::with(['question', 'style'])->whereBetween('date', [$today->subDays(7)->toDateString(), $today->addDays(30)->toDateString()])->get()->keyBy(fn ($e) => $e->date->toDateString());
         $days = collect(range(-7, 30))->map(fn ($i) => $today->addDays($i));
         $like = '%'.addcslashes(trim($this->search), '%_\\').'%';
 
@@ -106,6 +106,7 @@ new #[Layout('layouts::admin')] #[Title('Plán otázky dne')] class extends Comp
                         @if ($e)<a href="{{ route('admin.questions.edit', $e->question_id) }}" class="font-semibold">{{ $e->question->text }}</a>@else<span class="text-muted">—</span>@endif
                     </span>
                     @if ($e)
+                        @if ($e->style)<span class="badge-outline">{{ $e->style->name }}</span>@endif
                         <span class="{{ ['planned' => 'badge-mustard', 'approved' => 'badge-forest', 'published' => 'badge-outline', 'skipped' => 'badge-terra'][$e->status] }}">{{ \App\Models\DailyQuestion::STATUSES[$e->status] }}</span>
                         @if ($e->status === 'planned')<button wire:click="approve({{ $e->id }})" class="btn-forest btn-sm">Schválit</button>@endif
                         @if ($e->status !== 'published')<button wire:click="remove({{ $e->id }})" wire:confirm="Vyřadit z kalendáře?" class="btn-ghost btn-sm">Vyřadit</button>@endif

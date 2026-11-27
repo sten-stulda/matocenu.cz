@@ -14,15 +14,17 @@ use Illuminate\Validation\ValidationException;
 
 class UpdateProfile
 {
-    /** @param array{name?: string, location_id?: int|string|null, avatar?: UploadedFile|null} $input */
+    /** @param array{name?: string, location_id?: int|string|null, favorite_style_id?: int|string|null, avatar?: UploadedFile|null} $input */
     public function __invoke(User $user, array $input): User
     {
         $input['name'] = Str::squish((string) ($input['name'] ?? $user->name));
         $input['location_id'] = ($input['location_id'] ?? null) ?: null;
+        $input['favorite_style_id'] = ($input['favorite_style_id'] ?? null) ?: null;
 
         $rules = [
             'name' => ['required', 'string', 'min:3', 'max:40', 'regex:/^[\pL\pN][\pL\pN ._\-]*$/u', new UniqueNickname($user->id)],
             'location_id' => ['nullable', 'integer', Rule::exists('locations', 'id')->whereIn('type', ['region', 'district', 'municipality'])],
+            'favorite_style_id' => ['nullable', 'integer', Rule::exists('language_styles', 'id')->where('is_active', true)],
             'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048', 'dimensions:min_width=64,min_height=64,max_width=6000,max_height=6000'],
         ];
         Validator::make($input, $rules, ['name.regex' => 'Přezdívka může obsahovat písmena, číslice, mezery, tečky, podtržítka a pomlčky.'])->validate();
@@ -30,6 +32,7 @@ class UpdateProfile
         return DB::transaction(function () use ($user, $input) {
             $user->name = $input['name'];
             $user->location_id = $input['location_id'] ? (int) $input['location_id'] : null;
+            $user->favorite_style_id = $input['favorite_style_id'] ? (int) $input['favorite_style_id'] : null;
             if (($input['avatar'] ?? null) instanceof UploadedFile) {
                 $this->storeAvatar($user, $input['avatar']);
             }

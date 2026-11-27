@@ -38,7 +38,7 @@ class UpdateAnswer
 
         return DB::transaction(function () use ($user, $answer, $data, $original) {
             $answer = Answer::lockForUpdate()->findOrFail($answer->id);
-            [$display, $stylized] = $this->submit->resolveDisplay($user, $answer->question, $original, $data);
+            [$display, $stylized, $styleId] = $this->submit->resolveDisplay($user, $answer->question, $original, $data);
             [$status, $check] = $this->moderation->initialStatus($original.' '.$display);
 
             $answer->fill([
@@ -48,6 +48,7 @@ class UpdateAnswer
                 'show_original' => $stylized && $data->showOriginal,
                 'is_anonymous' => $data->isAnonymous,
             ]);
+            $answer->language_style_id = $styleId;
             $answer->version++;
             $answer->edited_at = now();
             if (! $check['ok']) {

@@ -1,11 +1,17 @@
 <?php
 
+use App\Domain\Administration\ReferenceData\AiSyncer;
 use App\Domain\Administration\ReferenceData\CategoriesSyncer;
 use App\Domain\Administration\ReferenceData\FeatureFlagsSyncer;
+use App\Domain\Administration\ReferenceData\LanguageStylesSyncer;
 use App\Domain\Administration\ReferenceData\LegalDocumentsSyncer;
 use App\Domain\Administration\ReferenceData\LocationsSyncer;
 use App\Domain\Administration\ReferenceData\ReactionTypesSyncer;
 use App\Domain\Administration\ReferenceData\RolesSyncer;
+use App\Domain\AI\Services\AiPersonalData;
+use App\Domain\AI\Services\AiPromptsInReview;
+use App\Domain\AI\Services\AiPruner;
+use App\Domain\Analytics\Widgets\AiWidget;
 use App\Domain\Analytics\Widgets\CommunityWidget;
 use App\Domain\Identity\Services\CommunityPersonalData;
 use App\Domain\Moderation\Services\AppealCount;
@@ -26,25 +32,32 @@ return [
         LegalDocumentsSyncer::class,
         CategoriesSyncer::class,
         ReactionTypesSyncer::class,
+        LanguageStylesSyncer::class,
+        AiSyncer::class,
     ],
 
     // GDPR: modules storing personal data (App\Domain\Identity\Contracts\PersonalDataContributor).
     'personal_data' => [
         CommunityPersonalData::class,
+        AiPersonalData::class,
     ],
 
     // Admin menu counters: route name => invokable class returning int.
     'admin_badges' => [
         'admin.moderation' => QueueCount::class,
         'admin.appeals' => AppealCount::class,
+        'admin.ai.prompts' => AiPromptsInReview::class,
     ],
 
     // Retention pruners (invokable classes returning a summary line), run by matocenu:prune.
-    'pruners' => [],
+    'pruners' => [
+        AiPruner::class,
+    ],
 
     // Admin dashboard widgets (App\Domain\Analytics\Contracts\DashboardWidget).
     'admin_widgets' => [
         CommunityWidget::class,
+        AiWidget::class,
     ],
 
     // Scheduled tasks shown on the dashboard: cache key suffix => label (see routes/console.php).
@@ -85,6 +98,7 @@ return [
         'ai.regenerations_per_answer' => [2, 'int', 'Opakovaná generování na jednu odpověď', 'AI'],
         'ai.variants_per_request' => [3, 'int', 'Počet variant na jedno generování', 'AI'],
         'ai.usd_czk_rate' => ['23.50', 'decimal', 'Kurz USD → CZK pro přepočet nákladů', 'AI'],
+        'daily.style_schedule' => [['1' => 'moravak', '2' => 'starocech', '3' => 'sarkastik', '4' => 'sedlak', '5' => 'hospodsky', '6' => 'basnik', '7' => 'filozof'], 'json', 'Jazyková osobnost dne podle dne v týdnu (1 = pondělí)', 'Otázka dne'],
         'ai.semantic_check' => [false, 'bool', 'Kontrola významu dalším AI voláním (zvyšuje náklady)', 'AI'],
         'ai.auto_publish_suggestions' => [false, 'bool', 'AI návrhy otázek se smí zveřejnit automaticky', 'AI'],
         'privacy.retention_days_audit' => [730, 'int', 'Retence auditního logu (dny)', 'Soukromí'],
@@ -112,6 +126,14 @@ return [
 
     'ai' => [
         'http_timeout' => 20,
+        'cache_hmac_key' => env('AI_CACHE_HMAC_KEY'),
+        // Optional env fallbacks for provider keys (admin UI keys take precedence).
+        'provider_keys' => [
+            'openrouter' => env('OPENROUTER_API_KEY'),
+            'openai' => env('OPENAI_API_KEY'),
+            'anthropic' => env('ANTHROPIC_API_KEY'),
+            'gemini' => env('GEMINI_API_KEY'),
+        ],
         // Answers that are safe to cache globally per question (short, non-personal).
         'shared_cache_answers' => ['ano', 'ne', 'já', 'ja', 'nevím', 'nevim', 'možná', 'mozna', 'nic', 'všechno', 'vsechno', 'děkuji', 'dekuji', 'díky', 'diky', 'čas', 'cas', 'peníze', 'penize', 'zdraví', 'zdravi', 'klid', 'spánek', 'spanek', 'láska', 'laska', 'rodina'],
     ],
