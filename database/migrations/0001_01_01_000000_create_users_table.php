@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -13,18 +14,27 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name', 40); // public nickname (přezdívka)
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->timestampTz('email_verified_at')->nullable();
+            $table->string('password')->nullable(); // null = only Google login
+            $table->string('google_id')->nullable()->unique();
+            $table->string('avatar_path')->nullable();
+            $table->string('status', 20)->default('active'); // active | suspended | deleted
+            $table->timestampTz('suspended_until')->nullable();
+            $table->timestampTz('last_seen_at')->nullable();
             $table->rememberToken();
-            $table->timestamps();
+            $table->timestampsTz();
+            $table->timestampTz('deleted_at')->nullable(); // account deleted = anonymised, row kept for content integrity
         });
+
+        // Nicknames are unique case-insensitively.
+        DB::statement('CREATE UNIQUE INDEX users_name_lower_unique ON users (lower(name))');
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
-            $table->timestamp('created_at')->nullable();
+            $table->timestampTz('created_at')->nullable();
         });
 
         Schema::create('sessions', function (Blueprint $table) {

@@ -28,3 +28,4 @@ Thumbs.db
 /.env.testing
 /docker-compose.override.yml
 /backups
+/.env.preview

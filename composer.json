@@ -1,10 +1,13 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "sten-stulda/matocenu.cz",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
-    "license": "MIT",
+    "description": "MáToCenu.cz – česká komunitní platforma",
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
+    "license": "proprietary",
     "require": {
         "php": "^8.3",
         "laravel/fortify": "^1.44",
@@ -34,7 +37,10 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

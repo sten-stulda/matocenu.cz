@@ -1,9 +1,176 @@
+@import './fonts.css';
 @import 'tailwindcss';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
+@source '../views';
+@source '../js';
+@source '../../app';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ | MáToCenu.cz design tokens (design/html/01-identita-a-design-system.html).
+ | Semantic colours switch in dark mode; brand colours (forest, mustard, terra) stay fixed.
+ */
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Bricolage Grotesque', 'Inter', ui-sans-serif, sans-serif;
+    --font-hand: 'Caveat', cursive;
+
+    /* brand */
+    --color-forest: #244A35;
+    --color-forest-700: #1a3727;
+    --color-forest-300: #6f8f7b;
+    --color-forest-100: #cfe0d4;
+    --color-mustard: #E5B54B;
+    --color-mustard-100: #F1E4C4;
+    --color-terra: #C76D46;
+    --color-terra-ink: #8A4A2C;
+    --color-terra-100: #F6E3DA;
+    --color-cream: #F7F3E9;
+    --color-charcoal: #252525;
+
+    /* semantic (light) – overridden in .dark below */
+    --color-bg: var(--mtc-bg);
+    --color-surface: var(--mtc-surface);
+    --color-surface-2: var(--mtc-surface-2);
+    --color-ink: var(--mtc-ink);
+    --color-muted: var(--mtc-muted);
+    --color-line: var(--mtc-line);
+    --color-primary: var(--mtc-primary);
+    --color-on-primary: var(--mtc-on-primary);
+    --color-warn: var(--mtc-warn);
+    --color-ok: var(--mtc-ok);
+
+    --radius-card: 10px;
+    --radius-pill: 999px;
+    --shadow-card: 0 1px 0 rgba(37, 37, 37, .04), 0 1px 3px rgba(37, 37, 37, .06);
+    --shadow-pop: 0 8px 28px rgba(37, 37, 37, .16);
+}
+
+:root {
+    --mtc-bg: #F7F3E9;
+    --mtc-surface: #FFFFFF;
+    --mtc-surface-2: #EFE8D6;
+    --mtc-ink: #252525;
+    --mtc-muted: #5a5a5a;
+    --mtc-line: #E4DCC8;
+    --mtc-primary: #244A35;
+    --mtc-on-primary: #F7F3E9;
+    --mtc-warn: #8A4A2C;
+    --mtc-ok: #244A35;
+    color-scheme: light;
+}
+
+.dark {
+    --mtc-bg: #171A17;
+    --mtc-surface: #222722;
+    --mtc-surface-2: #2B312B;
+    --mtc-ink: #EDE7D8;
+    --mtc-muted: #B5AE9E;
+    --mtc-line: #353C35;
+    --mtc-primary: #7FB394;
+    --mtc-on-primary: #171A17;
+    --mtc-warn: #E8A383;
+    --mtc-ok: #7FB394;
+    color-scheme: dark;
+}
+
+@layer base {
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+        @apply bg-bg text-ink font-sans antialiased;
+        font-feature-settings: 'cv11', 'ss01';
+    }
+    h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: -0.01em; }
+    a { @apply text-primary; }
+    :focus-visible { outline: 3px solid var(--color-mustard); outline-offset: 2px; border-radius: 6px; }
+    [x-cloak] { display: none !important; }
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+    }
+}
+
+@utility btn {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md px-4 text-sm font-semibold no-underline transition
+        disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+@utility badge {
+    @apply inline-flex items-center gap-1 rounded px-2 py-0.5 text-[11px] font-bold;
+}
+
+@utility link {
+    @apply font-semibold text-primary underline decoration-2 underline-offset-2 hover:decoration-mustard;
+}
+
+@layer components {
+    .paper {
+        background-image: radial-gradient(color-mix(in srgb, var(--color-forest) 7%, transparent) 1px, transparent 1px);
+        background-size: 14px 14px;
+    }
+    .dark .paper { background-image: radial-gradient(rgba(237, 231, 216, .05) 1px, transparent 1px); }
+
+    .container-page { @apply mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-10; }
+
+    .card { @apply rounded-[10px] border border-line bg-surface p-5 sm:p-6; box-shadow: var(--shadow-card); }
+    .card-dashed { @apply rounded-[10px] border border-dashed border-line p-5 sm:p-6; }
+
+    .eyebrow { @apply text-[12px] font-bold uppercase tracking-[.12em] text-terra-ink dark:text-mustard; }
+    .h-section { @apply font-display text-2xl font-bold sm:text-[28px]; }
+
+    .btn-primary { @apply btn bg-primary text-on-primary hover:brightness-110; }
+    .btn-forest { @apply btn bg-forest text-cream hover:bg-forest-700; }
+    .btn-accent { @apply btn bg-mustard text-charcoal hover:brightness-105; }
+    .btn-outline { @apply btn border-[1.5px] border-primary bg-transparent text-primary hover:bg-primary/5; }
+    .btn-ghost { @apply btn text-ink hover:bg-surface-2; }
+    .btn-danger { @apply btn border-[1.5px] border-terra-ink bg-transparent text-terra-ink hover:bg-terra-100 dark:border-terra dark:text-terra; }
+    .btn-sm { @apply min-h-9 px-3 text-[13px]; }
+
+    .chip {
+        @apply inline-flex min-h-10 items-center gap-1.5 rounded-full border-[1.5px] border-line bg-surface px-3.5 text-[13px] font-semibold text-ink transition hover:border-primary;
+    }
+    .chip[aria-pressed='true'], .chip-active { @apply border-primary bg-primary text-on-primary; }
+
+    .badge-mustard { @apply badge bg-mustard-100 text-charcoal; }
+    .badge-forest { @apply badge bg-forest text-cream; }
+    .badge-terra { @apply badge bg-terra-100 text-terra-ink; }
+    .badge-outline { @apply badge border border-line text-ink; }
+    .badge-dashed { @apply badge border border-dashed border-terra-ink text-terra-ink tracking-[.08em] uppercase dark:border-terra dark:text-terra; }
+
+    .input {
+        @apply block w-full rounded-md border-[1.5px] border-line bg-surface px-3.5 py-2.5 text-[15px] text-ink placeholder:text-muted/80
+        focus:border-primary focus:outline-none focus:ring-0;
+    }
+    .input-error { @apply border-terra-ink dark:border-terra; }
+    .label { @apply mb-1.5 block text-sm font-semibold; }
+    .help { @apply mt-1 text-[13px] text-muted; }
+    .error { @apply mt-1 text-[13px] font-semibold text-terra-ink dark:text-terra; }
+
+
+    .table-admin { @apply w-full text-left text-sm; }
+    .table-admin th { @apply border-b border-line px-3 py-2 text-[12px] font-semibold text-muted; }
+    .table-admin td { @apply border-b border-line px-3 py-2.5 align-top; }
+
+    .skeleton { @apply animate-pulse rounded bg-surface-2; }
+
+    .avatar { @apply inline-flex shrink-0 items-center justify-center rounded-full font-bold; }
+
+    .toggle {
+        @apply relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full bg-line transition;
+    }
+    .toggle[aria-checked='true'] { @apply bg-primary; }
+    .toggle span { @apply absolute left-1 h-5 w-5 rounded-full bg-white shadow transition; }
+    .toggle[aria-checked='true'] span { transform: translateX(20px); }
+
+    .prose-mtc { @apply max-w-none leading-relaxed; }
+    .prose-mtc h2 { @apply mt-8 mb-3 font-display text-xl font-bold; }
+    .prose-mtc h3 { @apply mt-6 mb-2 font-display text-lg font-bold; }
+    .prose-mtc p { @apply my-3; }
+    .prose-mtc ul { @apply my-3 list-disc pl-6; }
+    .prose-mtc ol { @apply my-3 list-decimal pl-6; }
+    .prose-mtc li { @apply my-1; }
+    .prose-mtc blockquote { @apply my-4 rounded-md border-l-4 border-mustard bg-mustard-100/60 px-4 py-2 dark:bg-surface-2; }
+    .prose-mtc a { @apply link; }
 }

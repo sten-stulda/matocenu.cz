@@ -97,6 +97,8 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public',
             'sslmode' => env('DB_SSLMODE', 'prefer'),
+            // Session TZ = app TZ so naive timestamps sent by Eloquent are interpreted correctly; timestamptz stores UTC.
+            'timezone' => env('APP_TIMEZONE', 'Europe/Prague'),
         ],
 
         'sqlsrv' => [
