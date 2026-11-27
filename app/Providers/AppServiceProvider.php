@@ -30,7 +30,10 @@ class AppServiceProvider extends ServiceProvider
         Model::preventLazyLoading(! $this->app->isProduction());
         Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
 
-        Password::defaults(fn () => Password::min(10)->letters()->numbers()->uncompromised(3));
+        // Have I Been Pwned check (k-anonymity range API) – skipped in tests to keep CI offline-safe.
+        Password::defaults(fn () => $this->app->runningUnitTests()
+            ? Password::min(10)->letters()->numbers()
+            : Password::min(10)->letters()->numbers()->uncompromised(3));
 
         // Superadmin can do everything; everyone else goes through permissions/policies.
         Gate::before(fn (User $user) => $user->hasRole(Role::Superadmin->value) ? true : null);
